@@ -35,6 +35,7 @@ module.exports = tseslint.config(
       "@typescript-eslint/no-empty-function": "error",
       "@typescript-eslint/no-unused-vars": "error",
       "no-console": ["warn", { "allow": ["warn", "error"] }],
+      "@angular-eslint/prefer-inject": "off",
       "quotes": ["error", "single"],
       "semi": ["error", "always"],
       "no-trailing-spaces": "error",
