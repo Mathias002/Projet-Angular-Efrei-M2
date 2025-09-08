@@ -13,17 +13,17 @@ export class CollectionsController {
     return this.collectionsService.create(createCollectionDto);
   }
 
-  @Put(':id')
+  @Put(':collectionId')
   async update(
-    @Param('id') id: string,
+    @Param('collectionId') collectionId: string,
     @Body() updateCollectionDto: UpdateCollectionDto
   ): Promise<Collection | null> {
-    return this.collectionsService.update(id, updateCollectionDto);
+    return this.collectionsService.update(collectionId, updateCollectionDto);
   }
 
-  @Delete(':id')
-  async delte(@Param('id') id: string): Promise<Collection | null> {
-    return this.collectionsService.delete(id);
+  @Delete(':collectionId')
+  async delte(@Param('collectionId') collectionId: string): Promise<Collection | null> {
+    return this.collectionsService.delete(collectionId);
   }
 
   @Get()
@@ -31,8 +31,13 @@ export class CollectionsController {
     return this.collectionsService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Collection | null> {
-    return this.collectionsService.findOne(id);
+  @Get('user/:userId')
+  async findCollectionByUser(@Param('userId') userId: string): Promise<Collection[]> {
+    return this.collectionsService.findCollectionByUser(userId);
+  }
+
+  @Get(':collectionId')
+  async findOne(@Param('collectionId') collectionId: string): Promise<Collection | null> {
+    return this.collectionsService.findOne(collectionId);
   }
 }

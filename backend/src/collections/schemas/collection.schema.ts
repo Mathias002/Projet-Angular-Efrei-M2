@@ -8,10 +8,10 @@ export class Collection {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop()
   description: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'userId', required: true })
   userId: Types.ObjectId;
 
   // On stocke uniquement les IDs MyAnimeList
