@@ -8,11 +8,22 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  /**
+   * Create a new user.
+   * @param createUserDto - Data Transfer Object containing user details.
+   * @returns The created User object.
+   */
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
 
+  /**
+   * Update an existing user.
+   * @param userId - The ID of the user to update.
+   * @param updateUserDto - Data Transfer Object containing updated user details.
+   * @returns The updated User object or null if not found.
+   */
   @Put(':userId')
   async update(
     @Param('userId') userId: string,
@@ -21,16 +32,30 @@ export class UsersController {
     return this.usersService.update(userId, updateUserDto);
   }
 
+  /**
+   * Delete (soft-delete) a user by ID.
+   * @param userId - The ID of the user to delete.
+   * @returns The deleted User object or null if not found.
+   */
   @Delete(':userId')
   async delte(@Param('userId') userId: string): Promise<User | null> {
     return this.usersService.delete(userId);
   }
 
+  /**
+   * Retrieve all active users.
+   * @returns An array of User objects.
+   */
   @Get()
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
+  /**
+   * Retrieve a single user by ID.
+   * @param userId - The ID of the user to retrieve.
+   * @returns The User object or null if not found.
+   */
   @Get(':userId')
   async findOne(@Param('userId') userId: string): Promise<User | null> {
     return this.usersService.findOne(userId);

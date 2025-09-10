@@ -5,6 +5,8 @@ import { Collection, CollectionDocument } from './schemas/collection.schema';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { UsersService } from '../users/users.service';
+import { AddMangaDto } from '../mangas/dto/add-manga.dto';
+import { UpdateMangaDto } from '../mangas/dto/update-manga.dto';
 
 @Injectable()
 export class CollectionsService {
@@ -78,10 +80,10 @@ export class CollectionsService {
     }
   }
 
-  async findOne(collectionid: string): Promise<Collection | null> {
+  async findOne(collectionId: string): Promise<Collection> {
     // get active collection associated with the param collectionId
     const collection = await this.collectionModel
-      .findOne({ _id: collectionid, deletedAt: null })
+      .findOne({ _id: collectionId, deletedAt: null })
       .exec();
 
     if (collection) {
@@ -96,5 +98,69 @@ export class CollectionsService {
     }
   }
 
-  // add manga func (add/delete)
+  async addManga(collectionId: string, addMangaDto: AddMangaDto): Promise<Collection | null> {
+    // check if collection exist
+    await this.findOne(collectionId);
+
+    // add manga in bdd
+    const FilledCollection = await this.collectionModel.findByIdAndUpdate(
+      { _id: collectionId },
+      {
+        $push: {
+          mangas: { idManga: addMangaDto.idManga, tomesPossedes: addMangaDto.tomesPossedes },
+        },
+      },
+      { new: true }
+    );
+
+    return FilledCollection;
+  }
+
+  async updateManga(
+    collectionId: string,
+    mangaId: number,
+    updateMangaDto: UpdateMangaDto
+  ): Promise<Collection | null> {
+    // check if collection exist // rajouter verif user
+    const collection = await this.findOne(collectionId);
+
+    // check if the manga exist in the collection
+    const manga = collection!.mangas.find((m) => m.idManga === mangaId);
+    if (!manga) {
+      throw new NotFoundException(
+        `Le manga avec l'id ${mangaId} n'existe pas dans cette collection.`
+      );
+    }
+
+    // update the manga
+    const updatedMangaCollection = await this.collectionModel.findOneAndUpdate(
+      { _id: collectionId, 'mangas.idManga': mangaId },
+      { $set: { 'mangas.$.tomesPossedes': updateMangaDto.tomesPossedes } },
+      { new: true }
+    );
+
+    return updatedMangaCollection;
+  }
+
+  async deleteManga(collectionId: string, mangaId: number): Promise<Collection | null> {
+    // check if collection exist // rajouter verif user
+    const collection = await this.findOne(collectionId);
+
+    // check if the manga exist in the collection
+    const manga = collection!.mangas.find((m) => m.idManga === mangaId);
+    if (!manga) {
+      throw new NotFoundException(
+        `Le manga avec l'id ${mangaId} n'existe pas dans cette collection.`
+      );
+    }
+
+    // delete the manga
+    const emptiedCollection = await this.collectionModel.findByIdAndUpdate(
+      { _id: collectionId },
+      { $pull: { mangas: { idManga: mangaId } } },
+      { new: true }
+    );
+
+    return emptiedCollection;
+  }
 }
