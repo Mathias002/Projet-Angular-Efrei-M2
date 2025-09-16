@@ -17,7 +17,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     if (createUserDto.password !== createUserDto.confirmPassword) {
       // the password fiel and the confirmPasswor field do not contain the same value -> BadRequestException
-      throw new BadRequestException("Une erreur c'est produite", {
+      throw new BadRequestException('Une erreur est survenue', {
         cause: new Error(),
         description:
           'Veillez vérifier que le mot de passe est similaire à celui renseigner dans la confirmation',
@@ -54,7 +54,7 @@ export class UsersService {
     if (updateUserDto.newPassword) {
       // check if newPassword and confirmPassword have the same value
       if (updateUserDto.newPassword !== updateUserDto.confirmPassword) {
-        throw new BadRequestException("Une erreur s'est produite", {
+        throw new BadRequestException('Une erreur est survenue', {
           cause: new Error(),
           description:
             'Veuillez vérifier que le mot de passe est similaire à celui renseigné dans la confirmation',
@@ -65,7 +65,7 @@ export class UsersService {
       if (!updateUserDto.oldPassword) {
         throw new BadRequestException('Ancien mot de passe requis', {
           cause: new Error(),
-          description: "L'ancien mot de passe est requis pour modifier le mot de passe.",
+          description: 'Votre ancien mot de passe est requis pour modifier le mot de passe.',
         });
       }
 
@@ -111,9 +111,9 @@ export class UsersService {
       return users;
     } else {
       // no user was returned -> NotFoundException
-      throw new NotFoundException("Une erreur c'est produite", {
+      throw new NotFoundException('Une erreur est survenue', {
         cause: new Error(),
-        description: "Il semblerait qu'il n'existe pas encore d'utilisateur :(",
+        description: 'Aucun utilisateur en vue :(',
       });
     }
   }
@@ -127,9 +127,9 @@ export class UsersService {
       return user;
     } else {
       // no user was returned -> NotFoundException
-      throw new NotFoundException("Une erreur c'est produite", {
+      throw new NotFoundException('Une erreur est survenue', {
         cause: new Error(),
-        description: "Il semblerait que cet utilisateur n'existe pas :(",
+        description: 'Il semblerait que cet utilisateur ne soit pas de ce monde :(',
       });
     }
   }
