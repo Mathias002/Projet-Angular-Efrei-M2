@@ -1,12 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { CollectionsService } from './collections.service';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { Collection } from './schemas/collection.schema';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { AddMangaDto } from '../mangas/dto/add-manga.dto';
 import { UpdateMangaDto } from '../mangas/dto/update-manga.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Role } from '../auth/role.decorator';
 
 @Controller('collections')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class CollectionsController {
   constructor(private readonly collectionsService: CollectionsService) {}
 
@@ -49,6 +53,7 @@ export class CollectionsController {
    * @returns An array of Collection objects.
    */
   @Get()
+  @Role('admin')
   async findAll(): Promise<Collection[]> {
     return this.collectionsService.findAll();
   }

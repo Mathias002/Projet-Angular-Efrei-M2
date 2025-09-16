@@ -1,10 +1,14 @@
-import { Body, Controller, Get, Put, Param, Delete, Post } from '@nestjs/common';
+import { Body, Controller, Get, UseGuards, Put, Param, Delete, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Role } from '../auth/role.decorator';
 
 @Controller('users')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -14,6 +18,7 @@ export class UsersController {
    * @returns The created User object.
    */
   @Post()
+  @Role('admin')
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
@@ -25,6 +30,7 @@ export class UsersController {
    * @returns The updated User object or null if not found.
    */
   @Put(':userId')
+  @Role('admin')
   async update(
     @Param('userId') userId: string,
     @Body() updateUserDto: UpdateUserDto
@@ -38,7 +44,8 @@ export class UsersController {
    * @returns The deleted User object or null if not found.
    */
   @Delete(':userId')
-  async delte(@Param('userId') userId: string): Promise<User | null> {
+  @Role('admin')
+  async delete(@Param('userId') userId: string): Promise<User | null> {
     return this.usersService.delete(userId);
   }
 
@@ -47,6 +54,7 @@ export class UsersController {
    * @returns An array of User objects.
    */
   @Get()
+  @Role('admin')
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
