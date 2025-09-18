@@ -12,7 +12,7 @@ export class User {
   email: string;
 
   @Prop({ required: true })
-  password: string; // hashé
+  password: string;
 
   @Prop({ enum: ['user', 'admin'], default: 'user' })
   role: string;
