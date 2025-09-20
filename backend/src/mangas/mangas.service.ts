@@ -64,4 +64,11 @@ export class MangasService {
     // Ici, on sait que le manga existe et on a déjà ses données
     return result.data;
   }
+
+  // Récupération de toute la liste des mangas
+  async getMangaSearch() {
+    const response = await lastValueFrom(this.httpService.get(`${this.API}`, { timeout: 3000 }));
+
+    return response.data;
+  }
 }

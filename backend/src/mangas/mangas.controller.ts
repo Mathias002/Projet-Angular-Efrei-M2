@@ -17,4 +17,9 @@ export class MangasController {
       });
     }
   }
+
+  @Get()
+  async getMangaSearch() {
+    return this.mangasService.getMangaSearch();
+  }
 }
