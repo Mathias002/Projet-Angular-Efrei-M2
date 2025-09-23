@@ -10,7 +10,8 @@ import {
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService, RegisterRequest } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
+import { RegisterRequest } from '../../models/auth.model';
 
 // Validator pour la confirmation du mot de passe
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {

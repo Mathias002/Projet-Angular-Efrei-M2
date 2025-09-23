@@ -1,16 +1,17 @@
 // admin.component.ts
 import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AdminService, UserInfos } from '../services/admin.service';
+import { AdminService } from '../services/admin.service';
 import { RegisterComponent } from '../../auth/components/register/register.component';
+import { UserInfos } from '../models/admin.model';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
   imports: [CommonModule, RegisterComponent],
   template: `
-    <div class="min-h-screen bg-gray-50 py-8">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen bg-gray-50 py-8 flex items-center">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <!-- Header -->
         <div class="mb-8">
           <div class="flex items-center justify-between">
@@ -447,14 +448,6 @@ import { RegisterComponent } from '../../auth/components/register/register.compo
 
             <!-- Informations détaillées -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- ID -->
-              <div>
-                <span class="block text-sm font-medium text-gray-700 mb-1">ID Utilisateur</span>
-                <div class="p-3 bg-gray-50 rounded-md">
-                  <code class="text-sm text-gray-900 font-mono">{{ selectedUser()!._id }}</code>
-                </div>
-              </div>
-
               <!-- Email -->
               <div>
                 <span class="block text-sm font-medium text-gray-700 mb-1">Adresse email</span>

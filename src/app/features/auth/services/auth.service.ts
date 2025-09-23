@@ -4,45 +4,14 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  role: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface JwtPayload {
-  sub: string;
-  id: string;
-  username: string;
-  email: string;
-  role: string;
-  exp: number;
-  iat: number;
-}
-
-export interface RegisterRequest {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  role?: string;
-}
-
-export interface AuthResponse {
-  access_token: string;
-}
-
-export interface RegisterResponse {
-  message: string;
-  user: User;
-}
+import {
+  RegisterResponse,
+  AuthResponse,
+  RegisterRequest,
+  JwtPayload,
+  LoginRequest,
+  User,
+} from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root',

@@ -1,0 +1,84 @@
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { MangaInfos } from '../models/manga.model';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-manga-details-modal',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div
+      class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 transition-opacity"
+      *ngIf="isOpen"
+    >
+      <!-- Overlay cliquable -->
+      <div
+        class="absolute inset-0"
+        role="button"
+        tabindex="0"
+        (click)="onClose()"
+        (keydown.enter)="onClose()"
+        (keydown.space)="onClose()"
+      ></div>
+
+      <!-- Contenu du modal -->
+      <div
+        class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full mx-4 p-6 overflow-y-auto max-h-[90vh] animate-fadeIn"
+      >
+        <!-- Bouton de fermeture -->
+        <button
+          (click)="onClose()"
+          class="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-200 transition"
+        >
+          ✕
+        </button>
+
+        <div *ngIf="manga">
+          <div class="flex flex-col md:flex-row gap-6">
+            <!-- Image -->
+            <img
+              [src]="manga.images.jpg.large_image_url"
+              [alt]="manga.title"
+              class="rounded-lg max-w-[200px] mx-auto md:mx-0"
+            />
+
+            <!-- Infos principales -->
+            <div class="flex flex-col space-y-3">
+              <h2 class="text-2xl font-bold">{{ manga.title }}</h2>
+              <p
+                *ngIf="manga.title_english && manga.title_english !== manga.title"
+                class="text-gray-600"
+              >
+                {{ manga.title_english }}
+              </p>
+
+              <p class="text-sm text-gray-500">{{ manga.published.string }}</p>
+
+              <div class="flex flex-wrap gap-2">
+                <span
+                  *ngFor="let genre of manga.genres"
+                  class="px-2 py-1 bg-gray-100 rounded-full text-xs"
+                >
+                  {{ genre.name }}
+                </span>
+              </div>
+
+              <p *ngIf="manga.synopsis" class="text-gray-700 mt-4">
+                {{ manga.synopsis }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+})
+export class MangaDetailsModalComponent {
+  @Input() manga: MangaInfos | null = null;
+  @Input() isOpen = false;
+  @Output() closeModal = new EventEmitter<void>();
+
+  onClose() {
+    this.closeModal.emit();
+  }
+}

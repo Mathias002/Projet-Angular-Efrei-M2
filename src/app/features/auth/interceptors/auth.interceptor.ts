@@ -21,12 +21,14 @@ export class AuthInterceptor implements HttpInterceptor {
     const isAuthRequest =
       request.url.includes('/auth/login') || request.url.includes('/auth/register');
 
-    if (token && !isAuthRequest) {
-      request = request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    if (!request.url.includes('api.jikan.moe')) {
+      if (token && !isAuthRequest) {
+        request = request.clone({
+          setHeaders: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
     }
 
     return next.handle(request).pipe(
