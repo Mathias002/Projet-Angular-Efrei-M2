@@ -689,8 +689,6 @@ export class CollectionsComponent implements OnInit {
 
     this.deleting = true;
 
-    console.log(this.collectionToDelete);
-
     this.collectionService.deleteCollection(this.collectionToDelete._id).subscribe({
       next: () => {
         this.collections = this.collections.filter((c) => c._id !== this.collectionToDelete!._id);

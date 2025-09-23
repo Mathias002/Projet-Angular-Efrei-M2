@@ -387,7 +387,8 @@ export class AddMangaToCollectionModalComponent implements OnInit, OnChanges {
         this.submitting = false;
       },
       error: (error) => {
-        this.errorMessage = error.message || "Erreur lors de l'ajout du manga";
+        this.errorMessage =
+          error.message || 'Ajout du manga en base de données interrompu. Une erreur est survenue';
         this.submitting = false;
       },
     });
