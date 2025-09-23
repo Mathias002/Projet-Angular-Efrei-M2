@@ -690,11 +690,11 @@ export class AdminComponent implements OnInit {
         this.showDeleteModal.set(false);
         this.userToDelete.set(null);
         this.deleting.set(false);
-        console.log(`Utilisateur ${user.username} supprimé.`);
+        // console.log(`Utilisateur ${user.username} supprimé.`);
       },
       error: (err) => {
         console.error('Error deleting user:', err);
-        this.errorMessage.set("Erreur lors de la suppression de l'utilisateur");
+        this.errorMessage.set('Désolé, la suppression a échoué');
         this.deleting.set(false);
       },
     });
