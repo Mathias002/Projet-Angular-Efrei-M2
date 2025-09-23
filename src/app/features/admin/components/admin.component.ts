@@ -3,12 +3,13 @@ import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../services/admin.service';
 import { RegisterComponent } from '../../auth/components/register/register.component';
-import { UserInfos } from '../models/admin.model';
+import { UpdateRoleRequest, UserInfos } from '../models/admin.model';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, RegisterComponent],
+  imports: [CommonModule, RegisterComponent, ReactiveFormsModule],
   template: `
     <div class="min-h-screen bg-gray-50 py-8 flex items-center">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -248,7 +249,20 @@ import { UserInfos } from '../models/admin.model';
                           </svg>
                         </button>
 
-                        <!-- Bouton supprimer (seulement si pas admin) -->
+                        <button
+                          *ngIf="user.role !== 'admin'"
+                          (click)="displayUpdateUserRoleModal(user)"
+                          class="inline-flex items-center p-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                          title="augmenter les privilèges"
+                        >
+                          <svg height="1rem" viewBox="0 -960 960 960" width="1rem" fill="#000000">
+                            <path
+                              d="m296-105-56-56 240-240 240 240-56 56-184-183-184 183Zm0-240-56-56 240-240 240 240-56 56-184-183-184 183Zm0-240-56-56 240-240 240 240-56 56-184-183-184 183Z"
+                            />
+                          </svg>
+                        </button>
+
+                        <!-- Bouton supprimer (seulement si le rôle n'est pas admin) -->
                         <button
                           *ngIf="user.role !== 'admin'"
                           (click)="confirmDeleteUser(user)"
@@ -319,6 +333,73 @@ import { UserInfos } from '../models/admin.model';
             Aucun utilisateur trouvé dans la base de données.
           </p>
         </div>
+      </div>
+    </div>
+
+    <div
+      *ngIf="showUpdateModal()"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+        <form [formGroup]="userUpdateRoleForm" (ngSubmit)="submitForm()">
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Modifier les privilèges</h3>
+
+            <!-- Username -->
+            <div class="mb-4">
+              <span class="block text-sm font-medium text-gray-700 mb-2">Role *</span>
+              <select
+                formControlName="selectUserRole"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="">Sélectionnez un rôle</option>
+                <option value="admin">Rôle administrateur</option>
+                <option value="user">Rôle utilisateur</option>
+              </select>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end space-x-3">
+              <button
+                type="button"
+                (click)="closeUpdateUserRoleModal()"
+                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+
+              <button
+                type="submit"
+                [disabled]="userUpdateRoleForm.invalid || updating()"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium disabled:opacity-50"
+              >
+                <span *ngIf="updating()" class="flex items-center">
+                  <svg
+                    class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    ></path>
+                  </svg>
+                  Modification...
+                </span>
+                <span *ngIf="!updating()">Modifier</span>
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -591,20 +672,35 @@ export class AdminComponent implements OnInit {
   users = signal<UserInfos[]>([]);
   selectedUser = signal<UserInfos | null>(null);
   loading = signal<boolean>(false);
+  updating = signal<boolean>(false);
   errorMessage = signal<string>('');
+
+  userUpdateRoleForm!: FormGroup;
 
   // État des modals
   showDeleteModal = signal<boolean>(false);
+  showUpdateModal = signal<boolean>(false);
   showDetailsModal = signal<boolean>(false);
   showCreateUserModal = signal<boolean>(false);
   userToDelete = signal<UserInfos | null>(null);
+  userToUpdate = signal<UserInfos | null>(null);
   deleting = signal<boolean>(false);
 
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    private fb: FormBuilder,
+  ) {}
 
   // Chargement des utilisateurs aux chargement de la page
   ngOnInit(): void {
+    this.initForm();
     this.getAllUsers();
+  }
+
+  private initForm(): void {
+    this.userUpdateRoleForm = this.fb.group({
+      selectUserRole: ['', Validators.required],
+    });
   }
 
   // Récupérer tout les utilisateurs
@@ -655,6 +751,47 @@ export class AdminComponent implements OnInit {
 
   closeCreateUserModal(): void {
     this.showCreateUserModal.set(false);
+  }
+
+  displayUpdateUserRoleModal(user: UserInfos): void {
+    this.selectedUser.set(user);
+
+    if (this.userUpdateRoleForm) {
+      const role = user.role ?? '';
+      this.userUpdateRoleForm.patchValue({ selectUserRole: role });
+    }
+    this.showUpdateModal.set(true);
+  }
+
+  closeUpdateUserRoleModal(): void {
+    this.showUpdateModal.set(false);
+  }
+
+  submitForm(): void {
+    if (this.userUpdateRoleForm.invalid || !this.selectedUser()) return;
+
+    this.updating.set(true);
+    const formData = this.userUpdateRoleForm.value;
+
+    const updateData: UpdateRoleRequest = {
+      username: this.selectedUser()?.username,
+      email: this.selectedUser()?.email,
+      role: formData.selectUserRole,
+    };
+
+    this.adminService.updateRoleUser(this.selectedUser()!._id, updateData).subscribe({
+      next: () => {
+        // ✅ On met à jour l'état local
+        this.showUpdateModal.set(false);
+        this.updating.set(false);
+        this.refreshUsers();
+      },
+      error: (err) => {
+        console.error('Erreur de mise à jour :', err);
+        this.errorMessage.set(err.error?.message || 'Une erreur est survenue');
+        this.updating.set(false);
+      },
+    });
   }
 
   confirmDeleteUser(user: UserInfos): void {

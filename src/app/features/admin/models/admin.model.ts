@@ -8,3 +8,9 @@ export interface UserInfos {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface UpdateRoleRequest {
+  username?: string;
+  email?: string;
+  role: string;
+}
