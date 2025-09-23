@@ -415,10 +415,12 @@ export class RegisterComponent implements OnInit {
       next: (response) => {
         this.successMessage = response.message || 'Compte créé avec succès !';
         this.loading = false;
-        // Redirection vers la page de connexion après 2 secondes
-        setTimeout(() => {
-          this.router.navigate(['/login']);
-        }, 2000);
+        if (!this.displayOnAdminPage) {
+          // Redirection vers la page de connexion après 2 secondes
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
+        }
       },
       error: (error) => {
         this.errorMessage = error.message;
