@@ -42,7 +42,11 @@ export class CollectionsService {
     // check if collection exist befere soft-deleting
     await this.findOne(collectionid);
 
-    return this.collectionModel.findByIdAndUpdate(collectionid, { deletedAt: Date.now() });
+    return this.collectionModel.findByIdAndUpdate(
+      collectionid,
+      { deletedAt: Date.now() },
+      { new: true }
+    );
   }
 
   async findAll(): Promise<Collection[]> {
@@ -54,9 +58,9 @@ export class CollectionsService {
       return collections;
     } else {
       // no collection was returned -> NotFoundException
-      throw new NotFoundException("Une erreur c'est produite", {
+      throw new NotFoundException('Une erreur est survenue', {
         cause: new Error(),
-        description: "Il semblerait qu'il n'existe pas encore de collection :(",
+        description: 'Il semble que cette collection ne soit pas répertoriée :(',
       });
     }
   }
@@ -68,16 +72,7 @@ export class CollectionsService {
     // returns active collections associeted with the param userId
     const collections = await this.collectionModel.find({ deletedAt: null, userId: userId });
 
-    if (collections.length !== 0) {
-      // at least one collection was returned
-      return collections;
-    } else {
-      // no collection was returned -> NotFoundException
-      throw new NotFoundException("Une erreur c'est produite", {
-        cause: new Error(),
-        description: 'Désolé cet utilisateur ne possède aucunne collection :(',
-      });
-    }
+    return collections;
   }
 
   async findOne(collectionId: string): Promise<Collection> {
@@ -91,9 +86,9 @@ export class CollectionsService {
       return collection;
     } else {
       // no collection was returned -> NotFoundException
-      throw new NotFoundException("Une erreur c'est produite", {
+      throw new NotFoundException('Une erreur est survenue', {
         cause: new Error(),
-        description: "Il semblerait que cette collection n'existe pas :(",
+        description: 'Il semble que cette collection ne soit pas répertoriée :(',
       });
     }
   }
