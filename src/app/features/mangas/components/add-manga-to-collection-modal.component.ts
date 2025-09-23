@@ -302,7 +302,7 @@ export class AddMangaToCollectionModalComponent implements OnInit, OnChanges {
   private getCurrentUser(): void {
     this.authService.currentUser$.subscribe((user) => {
       if (user) {
-        this.currentUserId = user.id;
+        this.currentUserId = user._id;
       }
     });
   }

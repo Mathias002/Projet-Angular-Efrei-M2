@@ -556,7 +556,7 @@ export class CollectionsComponent implements OnInit {
     // Récupérer l'ID de l'utilisateur connecté
     this.authService.currentUser$.subscribe((user) => {
       if (user) {
-        this.currentUserId = user.id;
+        this.currentUserId = user._id;
       }
     });
   }
@@ -688,6 +688,8 @@ export class CollectionsComponent implements OnInit {
     if (!this.collectionToDelete) return;
 
     this.deleting = true;
+
+    console.log(this.collectionToDelete);
 
     this.collectionService.deleteCollection(this.collectionToDelete._id).subscribe({
       next: () => {

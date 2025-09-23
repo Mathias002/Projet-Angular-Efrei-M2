@@ -1,5 +1,5 @@
 export interface User {
-  id: string;
+  _id: string;
   username: string;
   email: string;
   role: string;
@@ -11,7 +11,7 @@ export interface LoginRequest {
 }
 
 export interface JwtPayload {
-  id: string;
+  _id: string;
   username: string;
   email: string;
   role: string;
