@@ -1,14 +1,21 @@
 // dashboard.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService, User } from '../../auth/services/auth.service';
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../../auth/services/auth.service';
+import { User } from '../../../features/auth/models/auth.model';
+import { CollectionService } from '../../collections/services/collection.service';
+import { Collection } from '../../collections/models/collection.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div
+      class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex flex-col justify-center"
+      style="height: 100vh;"
+    >
       <!-- Header -->
       <div class="px-4 py-6 sm:px-0">
         <div class="border-4 border-dashed border-gray-200 rounded-lg p-8">
@@ -56,7 +63,7 @@ import { AuthService, User } from '../../auth/services/auth.service';
                   <div class="ml-5 w-0 flex-1">
                     <dl>
                       <dt class="text-sm font-medium text-gray-500 truncate">Total Manga</dt>
-                      <dd class="text-lg font-medium text-gray-900">-</dd>
+                      <dd class="text-lg font-medium text-gray-900">{{ totalTomes }}</dd>
                     </dl>
                   </div>
                 </div>
@@ -85,7 +92,7 @@ import { AuthService, User } from '../../auth/services/auth.service';
                   <div class="ml-5 w-0 flex-1">
                     <dl>
                       <dt class="text-sm font-medium text-gray-500 truncate">Collections</dt>
-                      <dd class="text-lg font-medium text-gray-900">-</dd>
+                      <dd class="text-lg font-medium text-gray-900">{{ collectionCount }}</dd>
                     </dl>
                   </div>
                 </div>
@@ -127,12 +134,14 @@ import { AuthService, User } from '../../auth/services/auth.service';
             <div class="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
               <button
                 type="button"
+                routerLink="/mangas"
                 class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
               >
                 Ajouter un manga
               </button>
               <button
                 type="button"
+                routerLink="/collections"
                 class="w-full sm:w-auto bg-white hover:bg-gray-50 text-gray-900 font-medium py-2 px-4 border border-gray-300 rounded-md transition duration-150 ease-in-out"
               >
                 Créer une collection
@@ -175,12 +184,50 @@ import { AuthService, User } from '../../auth/services/auth.service';
 })
 export class DashboardComponent implements OnInit {
   currentUser: User | null = null;
+  collectionsOfUser: Collection[] = [];
+  collectionCount = 0;
+  totalTomes = 0;
 
-  constructor(private authService: AuthService) {}
+  currentUserId = '';
+
+  constructor(
+    private authService: AuthService,
+    private collectionService: CollectionService,
+  ) {}
 
   ngOnInit(): void {
+    this.getCurrentUser();
+  }
+
+  private getCurrentUser(): void {
+    // Récupérer l'ID de l'utilisateur connecté
     this.authService.currentUser$.subscribe((user) => {
-      this.currentUser = user;
+      if (user) {
+        this.currentUser = user;
+        this.currentUserId = user.id;
+        this.getCollectionCount();
+      }
     });
+  }
+
+  getCollectionCount(): void {
+    if (!this.currentUserId) return;
+    this.collectionService.getCollectionsByUser(this.currentUserId).subscribe({
+      next: (collections) => {
+        this.collectionsOfUser = collections;
+        this.collectionCount = this.collectionsOfUser.length;
+        // Une fois qu'on a les collections, on calcule les tomes
+        this.getMangaCount();
+      },
+    });
+  }
+
+  getMangaCount(): void {
+    this.totalTomes = this.collectionsOfUser.reduce((total, collection) => {
+      return (
+        total +
+        collection.mangas.reduce((sum, manga) => sum + (manga.tomesPossedes?.length || 0), 0)
+      );
+    }, 0);
   }
 }
