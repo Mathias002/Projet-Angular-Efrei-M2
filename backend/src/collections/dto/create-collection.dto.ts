@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateCollectionDto {
   @IsNotEmpty()
@@ -8,7 +8,6 @@ export class CreateCollectionDto {
 
   @IsString()
   @MaxLength(500)
-  @IsOptional()
   description: string;
 
   @IsString()
