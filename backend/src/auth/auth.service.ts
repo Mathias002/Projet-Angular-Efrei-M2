@@ -40,7 +40,7 @@ export class AuthService {
 
     return {
       message: 'Utilisateur créé avec succès',
-      user: { id: user._id, username: user.username, email: user.email, role: user.role },
+      user: { _id: user._id, username: user.username, email: user.email, role: user.role },
     };
   }
 
@@ -51,7 +51,7 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
     if (!isPasswordValid) throw new UnauthorizedException('Identifiants invalides');
 
-    const payload = { id: user._id, username: user.username, email: user.email, role: user.role };
+    const payload = { _id: user._id, username: user.username, email: user.email, role: user.role };
     const token = this.jwtService.sign(payload);
 
     return { access_token: token };
