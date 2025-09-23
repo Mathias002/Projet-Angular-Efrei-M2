@@ -34,16 +34,20 @@ export const routes: Routes = [
       import('./features/admin/components/admin.component').then((c) => c.AdminComponent),
     canActivate: [AuthGuard],
   },
-  //   {
-  //     path: 'collections',
-  //     loadComponent: () => import('./collections/collections.component').then(c => c.CollectionsComponent),
-  //     canActivate: [AuthGuard]
-  //   },
-  //   {
-  //     path: 'manga',
-  //     loadComponent: () => import('./manga/manga.component').then(c => c.MangaComponent),
-  //     canActivate: [AuthGuard]
-  //   },
+  {
+    path: 'collections',
+    loadComponent: () =>
+      import('./features/collections/components/collection.component').then(
+        (c) => c.CollectionsComponent,
+      ),
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'mangas',
+    loadComponent: () =>
+      import('./features/mangas/components/manga.component').then((c) => c.MangaListComponent),
+    canActivate: [AuthGuard],
+  },
   //   {
   //     path: 'profile',
   //     loadComponent: () => import('./profile/profile.component').then(c => c.ProfileComponent),
