@@ -451,7 +451,7 @@ export class MangaListComponent implements OnInit {
   getAllMangas(): void {
     this.mangaService.getMangaSearch().subscribe({
       next: (response) => {
-        // SuccÃ¨s - API accessible
+        // Succès - API accessible
         this.isAPIJoignable = true;
         this.mangaList = response;
         this.itemCount = this.mangaList.pagination.items.total;
@@ -468,7 +468,7 @@ export class MangaListComponent implements OnInit {
           this.errorMessage =
             'Impossible de contacter le serveur. Vérifiez votre connexion internet.';
         } else if (error.status === 0) {
-          // Erreur CORS ou serveur complÃ¨tement inaccessible
+          // Erreur CORS ou serveur complètement inaccessible
           this.isAPIJoignable = false;
           this.errorMessage = 'Le serveur est inaccessible. Veuillez réessayer plus tard.';
         } else if (error.status >= 500) {
@@ -478,15 +478,15 @@ export class MangaListComponent implements OnInit {
         } else if (error.status === 404) {
           // Endpoint non trouvé - API joignable mais endpoint incorrect
           this.isAPIJoignable = true;
-          this.errorMessage = "Service non disponible. L'API a peut-Ãªtre changé.";
+          this.errorMessage = 'Service non disponible. Les endpoint API ont peut-être changé.';
         } else if (error.status >= 400 && error.status < 500) {
-          // Erreur client - API joignable mais problÃ¨me avec la requÃªte
+          // Erreur client - API joignable mais problème avec la requête
           this.isAPIJoignable = true;
-          this.errorMessage = 'ProblÃ¨me avec la requÃªte. Veuillez réessayer.';
+          this.errorMessage = 'Problème avec la requête. Veuillez réessayer.';
         } else {
           // Autres erreurs
           this.isAPIJoignable = false;
-          this.errorMessage = "Une erreur inattendue s'est produite.";
+          this.errorMessage = 'Une erreur inattendue est survenue.';
         }
       },
     });

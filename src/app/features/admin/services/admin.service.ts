@@ -3,13 +3,13 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { UserInfos } from '../models/admin.model';
+import { UpdateRoleRequest, UserInfos } from '../models/admin.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminService {
-  private readonly API_URL = 'http://localhost:3000';
+  private readonly API_URL = 'http://localhost:3000/users';
 
   constructor(
     private http: HttpClient,
@@ -17,22 +17,27 @@ export class AdminService {
   ) {}
 
   // Récupérer tout les users
-  getAllUsers(): Observable<UserInfos> {
-    return this.http.get<UserInfos>(`${this.API_URL}/users`).pipe(catchError(this.handleError));
+  getAllUsers(): Observable<UserInfos[]> {
+    return this.http.get<UserInfos[]>(`${this.API_URL}`).pipe(catchError(this.handleError));
   }
 
   // Supprimer un user
   deleteUser(userId: string): Observable<UserInfos> {
     return this.http
-      .delete<UserInfos>(`${this.API_URL}/users/${userId}`)
+      .delete<UserInfos>(`${this.API_URL}/${userId}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  // update user
+  updateRoleUser(userId: string, userData: UpdateRoleRequest): Observable<UserInfos> {
+    return this.http
+      .put<UserInfos>(`${this.API_URL}/${userId}`, userData)
       .pipe(catchError(this.handleError));
   }
 
   // Récupérer un user par id
   getUserById(userId: string): Observable<UserInfos> {
-    return this.http
-      .get<UserInfos>(`${this.API_URL}/users/${userId}`)
-      .pipe(catchError(this.handleError));
+    return this.http.get<UserInfos>(`${this.API_URL}/${userId}`).pipe(catchError(this.handleError));
   }
 
   // Gestion des erreurs

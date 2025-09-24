@@ -556,7 +556,7 @@ export class CollectionsComponent implements OnInit {
     // Récupérer l'ID de l'utilisateur connecté
     this.authService.currentUser$.subscribe((user) => {
       if (user) {
-        this.currentUserId = user.id;
+        this.currentUserId = user._id;
       }
     });
   }
