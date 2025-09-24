@@ -7,15 +7,29 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Role } from '../auth/role.decorator';
 
+/**
+ * UsersController
+ * --------------
+ * Contrôleur responsable de la gestion des users.
+ *
+ * - Expose les routes pour les opérations CRUD et autres des users.
+ * - Dépend de `usersService` pour la logique métier.
+ */
 @Controller('users')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class UsersController {
+  /**
+   * Injection du service des users.
+   */
   constructor(private readonly usersService: UsersService) {}
 
   /**
-   * Create a new user.
-   * @param createUserDto - Data Transfer Object containing user details.
-   * @returns The created User object.
+   * Route POST /users
+   * -------------------------
+   * Permet de créer un nouveau utilisateur en base de données.
+   *
+   * @param createUserDto - Données de l'utilisateur à enregistrer
+   * @returns l'utilisateur créé ou une erreur si les données sont invalides
    */
   @Post()
   @Role('admin')
@@ -24,10 +38,13 @@ export class UsersController {
   }
 
   /**
-   * Update an existing user.
-   * @param userId - The ID of the user to update.
-   * @param updateUserDto - Data Transfer Object containing updated user details.
-   * @returns The updated User object or null if not found.
+   * Route PUT /users
+   * -------------------------
+   * Permet de modifier un utilisateur en base de données.
+   *
+   * @param userId - Id de l'utilisateur à mettre à jour
+   * @param updateUserDto - Données de l'utilisateur à modifier
+   * @returns l'utilisateur modifiée ou une erreur si les données sont invalides
    */
   @Put(':userId')
   @Role('admin')
@@ -40,9 +57,12 @@ export class UsersController {
   }
 
   /**
-   * Delete (soft-delete) a user by ID.
-   * @param userId - The ID of the user to delete.
-   * @returns The deleted User object or null if not found.
+   * Route DELETE /users
+   * -------------------------
+   * Permet de supprimer un utilisateur en base de données.
+   *
+   * @param userId - Id de l'utilisateur à supprimer
+   * @returns l'utilisateur supprimée ou une erreur si les données sont invalides
    */
   @Delete(':userId')
   @Role('admin')
@@ -52,8 +72,12 @@ export class UsersController {
   }
 
   /**
-   * Retrieve all active users.
-   * @returns An array of User objects.
+   * Route GET /users
+   * -------------------------
+   * Permet de récupérer tout les utilisateurs actif en base de données.
+   *
+   * @param NoParams - Pas de paramètres requis
+   * @returns Tout les utilisateurs actif ou une erreur si les données sont invalides
    */
   @Get()
   @Role('admin')
@@ -62,9 +86,12 @@ export class UsersController {
   }
 
   /**
-   * Retrieve a single user by ID.
-   * @param userId - The ID of the user to retrieve.
-   * @returns The User object or null if not found.
+   * Route GET /users/@param userId
+   * -------------------------
+   * Permet de récupérer une collections.
+   *
+   * @param userId - Id de l'utilisateur à récupérer
+   * @returns l'utilisateur ou une erreur si les données sont invalides
    */
   @Get(':userId')
   async findOne(@Param('userId') userId: string): Promise<User | null> {
