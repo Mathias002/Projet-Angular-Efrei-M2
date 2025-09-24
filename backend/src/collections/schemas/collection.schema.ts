@@ -3,6 +3,8 @@ import { Document, Types } from 'mongoose';
 import { MangaInfo } from '../../mangas/schemas/manga.schema';
 
 /**
+ * CollectionDocument
+ * ------------
  * Type pour typer les documents Collection
  */
 export type CollectionDocument = Collection & Document;

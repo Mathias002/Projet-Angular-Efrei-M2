@@ -79,7 +79,7 @@ export class CollectionsService {
    * ----------
    * Suppression d'une collection en base de données après validation.
    *
-   * @param collectionid - Id de la collection à mettre à jour
+   * @param collectionid - Id de la collection à supprimer
    * @returns Informations de la collection supprimée
    */
   async delete(collectionid: string): Promise<Collection | null> {
@@ -108,7 +108,7 @@ export class CollectionsService {
 
     // Vérifie le contenue de `collections`
     if (collections.length !== 0) {
-      // Si `collections n'est pas null alors on retourne les collections`
+      // Si `collections n'est pas null alors on retourne les `collections`
       return collections;
     } else {
       // Sinon on retourne une NotFoundException
@@ -144,10 +144,10 @@ export class CollectionsService {
    * Récupération d'une collection en base de données après validation.
    *
    * @param collectionId - Id de la collection
-   * @returns Information de la collection
+   * @returns Informations de la collection
    */
   async findOne(collectionId: string): Promise<Collection> {
-    // Récupère la collection
+    // Récuperation de la collection
     const collection = await this.collectionModel
       .findOne({ _id: collectionId, deletedAt: null })
       .exec();

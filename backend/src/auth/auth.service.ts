@@ -67,7 +67,7 @@ export class AuthService {
       password: hashedPassword, // On remplace le mot de passe en clair par la version hashée
     });
 
-    // Retourne un objet sans mot de passe pour éviter toute fuite d'information sensible
+    // Retourne un objet user sans mot de passe pour éviter toute fuite d'information sensible
     return {
       message: 'Utilisateur créé avec succès',
       user: {
