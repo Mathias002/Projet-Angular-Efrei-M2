@@ -9,15 +9,29 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Role } from '../auth/role.decorator';
 
+/**
+ * CollectionController
+ * --------------
+ * Contrôleur responsable de la gestion des collections.
+ *
+ * - Expose les routes pour les opérations CRUD et autres des collections.
+ * - Dépend de `CollectionService` pour la logique métier.
+ */
 @Controller('collections')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class CollectionsController {
+  /**
+   * Injection du service des collections.
+   */
   constructor(private readonly collectionsService: CollectionsService) {}
 
   /**
-   * Create a new collection.
-   * @param createCollectionDto - Data Transfer Object containing collection details.
-   * @returns The created Collection object.
+   * Route POST /collections
+   * -------------------------
+   * Permet de créer une nouvelle collection en base de données.
+   *
+   * @param createCollectionDtoDto - Données de la collection à enregistrer
+   * @returns la collection créé ou une erreur si les données sont invalides
    */
   @Post()
   async create(@Body() createCollectionDto: CreateCollectionDto): Promise<Collection> {
@@ -25,10 +39,13 @@ export class CollectionsController {
   }
 
   /**
-   * Update an existing collection.
-   * @param collectionId - The ID of the collection to update.
-   * @param updateCollectionDto - Data Transfer Object containing updated collection details.
-   * @returns The updated Collection object or null if not found.
+   * Route PUT /collections
+   * -------------------------
+   * Permet de modifier une collection en base de données.
+   *
+   * @param collectionId - Id de la collection à mettre à jour
+   * @param updateCollectionDto - Données de la collection à modifier
+   * @returns la collection modifiée ou une erreur si les données sont invalides
    */
   @Put(':collectionId')
   async update(
@@ -39,9 +56,12 @@ export class CollectionsController {
   }
 
   /**
-   * Delete (soft-delete) a collection by ID.
-   * @param collectionId - The ID of the collection to delete.
-   * @returns The deleted Collection object or null if not found.
+   * Route DELETE /collections
+   * -------------------------
+   * Permet de supprimer une collection en base de données.
+   *
+   * @param collectionId - Id de la collection à supprimer
+   * @returns la collection supprimée ou une erreur si les données sont invalides
    */
   @Delete(':collectionId')
   async delte(@Param('collectionId') collectionId: string): Promise<Collection | null> {
@@ -49,8 +69,12 @@ export class CollectionsController {
   }
 
   /**
-   * Retrieve all active collections.
-   * @returns An array of Collection objects.
+   * Route GET /collections
+   * -------------------------
+   * Permet de récupérer toute les collections active en base de données.
+   *
+   * @param NoParams - Pas de paramètres requis
+   * @returns Toutes les collection active ou une erreur si les données sont invalides
    */
   @Get()
   @Role('admin')
@@ -59,9 +83,12 @@ export class CollectionsController {
   }
 
   /**
-   * Retrieve all collections for a specific user.
-   * @param userId - The ID of the user whose collections to retrieve.
-   * @returns An array of Collection objects.
+   * Route GET /collections/user/@param userId
+   * -------------------------
+   * Permet de récupérer les collections active d'un utilisateur.
+   *
+   * @param userId - Id de l'utilisateur
+   * @returns Les collection active de l'utilisateur ou une erreur si les données sont invalides
    */
   @Get('user/:userId')
   async findCollectionByUser(@Param('userId') userId: string): Promise<Collection[]> {
@@ -69,9 +96,12 @@ export class CollectionsController {
   }
 
   /**
-   * Retrieve a single collection by ID.
-   * @param collectionId - The ID of the collection to retrieve.
-   * @returns The Collection object or throws NotFoundException if not found.
+   * Route GET /collections/@param collectionId
+   * -------------------------
+   * Permet de récupérer une collections.
+   *
+   * @param collectionId - Id de la collection à récupérer
+   * @returns La collection ou une erreur si les données sont invalides
    */
   @Get(':collectionId')
   async findOne(@Param('collectionId') collectionId: string): Promise<Collection> {
@@ -79,10 +109,13 @@ export class CollectionsController {
   }
 
   /**
-   * Add a manga to a collection.
-   * @param collectionId - The ID of the collection.
-   * @param addMangaDto - Data Transfer Object containing manga details.
-   * @returns The updated Collection object or null if not found.
+   * Route POST /collections/@param collectionId/add-manga
+   * -------------------------
+   * Permet d'ajouter un manga dans une collections.
+   *
+   * @param collectionId - Id de la collection
+   * @param addMangaDto - Données du manga à ajouter à la collection
+   * @returns La collection ou une erreur si les données sont invalides
    */
   @Post(':collectionId/add-manga')
   async addManga(
@@ -93,33 +126,37 @@ export class CollectionsController {
   }
 
   /**
-   * Update a manga in a collection.
-   * @param collectionId - The ID of the collection.
-   * @param mangaId - The ID of the manga to update.
-   * @param updateMangaDto - Data Transfer Object containing updated manga details.
-   * @returns The updated Collection object or null if not found.
+   * Route PUT /collections/@param collectionId/update-manga/@param collectionId
+   * -------------------------
+   * Permet de mettre à jour un manga dans une collections.
+   *
+   * @param collectionId - Id de la collection
+   * @param mangaId - Id du manga
+   * @param updateMangaDto - Donnée du manga à mettre à jour
+   * @returns La collection ou une erreur si les données sont invalides
    */
   @Put(':collectionId/update-manga/:mangaId')
   async updateManga(
     @Param('collectionId') collectionId: string,
     @Param('mangaId') mangaId: number,
     @Body() updateMangaDto: UpdateMangaDto
-    // ajout check user
   ): Promise<Collection | null> {
     return this.collectionsService.updateManga(collectionId, Number(mangaId), updateMangaDto);
   }
 
   /**
-   * Delete a manga from a collection.
-   * @param collectionId - The ID of the collection.
-   * @param mangaId - The ID of the manga to delete.
-   * @returns The updated Collection object or null if not found.
+   * Route DELETE /collections/@param collectionId/delete-manga/@param mangaId
+   * -------------------------
+   * Permet de supprimer un manga d'une collections.
+   *
+   * @param collectionId - Id de la collection
+   * @param mangaId - Id du manga
+   * @returns La collection ou une erreur si les données sont invalides
    */
   @Delete(':collectionId/delete-manga/:mangaId')
   async deleteManga(
     @Param('collectionId') collectionId: string,
     @Param('mangaId') mangaId: number
-    // ajout check user
   ): Promise<Collection | null> {
     return this.collectionsService.deleteManga(collectionId, Number(mangaId));
   }

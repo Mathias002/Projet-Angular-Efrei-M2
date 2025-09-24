@@ -15,7 +15,6 @@ import { LoginDto } from './dto/login.dto';
 export class AuthController {
   /**
    * Injection du service d'authentification.
-   * Cela permet d'appeler les méthodes `register` et `login`.
    */
   constructor(private readonly authService: AuthService) {}
 
