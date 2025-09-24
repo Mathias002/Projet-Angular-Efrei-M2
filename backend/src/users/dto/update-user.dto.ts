@@ -1,4 +1,12 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+  ValidateIf,
+} from 'class-validator';
 import { UserRole } from './role.enum';
 
 export class UpdateUserDto {
@@ -14,18 +22,21 @@ export class UpdateUserDto {
   @IsEnum(UserRole)
   role: UserRole;
 
-  @IsOptional()
+  @ValidateIf((o) => o.oldPassword !== '')
   @MinLength(6)
   @IsString()
-  oldPassword: string;
+  @IsOptional()
+  oldPassword?: string;
 
-  @IsOptional()
+  @ValidateIf((o) => o.oldPassword !== '')
   @MinLength(6)
   @IsString()
-  newPassword: string;
+  @IsOptional()
+  newPassword?: string;
 
-  @IsOptional()
+  @ValidateIf((o) => o.oldPassword !== '')
   @MinLength(6)
   @IsString()
-  confirmPassword: string;
+  @IsOptional()
+  confirmPassword?: string;
 }
