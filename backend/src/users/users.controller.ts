@@ -31,6 +31,7 @@ export class UsersController {
    */
   @Put(':userId')
   @Role('admin')
+  @Role('user')
   async update(
     @Param('userId') userId: string,
     @Body() updateUserDto: UpdateUserDto
@@ -45,6 +46,7 @@ export class UsersController {
    */
   @Delete(':userId')
   @Role('admin')
+  @Role('user')
   async delete(@Param('userId') userId: string): Promise<User | null> {
     return this.usersService.delete(userId);
   }
