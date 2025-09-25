@@ -2,42 +2,40 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Router } from '@angular/router';
 import { MangaInfos, MangaListResponse } from '../models/manga.model';
+import { API_Manga } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MangaService {
-  private readonly API_URL = 'https://api.jikan.moe/v4/manga';
+  private readonly API_URL = `${API_Manga.apiUrl}`;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   data$!: Observable<{ data: MangaInfos }>;
 
-  // Récupérer tout les users
-  getMangaSearch(
-    page?: string,
-    limit?: string,
-    q?: string,
-    type?: string, //Enum: "manga" "novel" "lightnovel" "oneshot" "doujin" "manhwa" "manhua" Available Manga types
-    score?: number,
-    min_score?: number, // Set a minimum score for results.
-    max_score?: number, // Set a maximum score for results
-    status?: string, // Enum: "publishing" "complete" "hiatus" "discontinued" "upcoming" Available Manga statuses
-    sfw?: boolean, // Filter out Adult entries
-    genres?: string, // Filter by genre(s) IDs. Can pass multiple with a comma as a delimiter. e.g 1,2,3
-    genres_exclude?: string, // Exclude genre(s) IDs. Can pass multiple with a comma as a delimiter. e.g 1,2,3
-    order_by?: string, // Enum: "mal_id" "title" "start_date" "end_date" "chapters" "volumes" "score" "scored_by" "rank" "popularity" "members" "favorites" Available Manga order_by properties
-    sort?: string, // Enum: "desc" "asc" Search query sort direction
-    letter?: string, // Return entries starting with the given letter
-    magazines?: string, // Filter by magazine(s) IDs. Can pass multiple with a comma as a delimiter. e.g 1,2,3
-    start_date?: string, // Filter by starting date. Format: YYYY-MM-DD. e.g 2022, 2005-05, 2005-01-01
-    end_date?: string, // Filter by ending date. Format: YYYY-MM-DD. e.g 2022, 2005-05, 2005-01-01
-  ): Observable<MangaListResponse> {
+  /**
+   * getMangaSearch
+   * ---------------
+   * Récupère une liste de mangas depuis l’API avec pagination.
+   *
+   * Paramètres (tous optionnels) :
+   * - page           : numéro de la page à récupérer
+   * - limit          : nombre d’éléments par page
+   *
+   * Processus :
+   * 1. Initialise un objet `HttpParams`
+   * 2. Ajoute uniquement les paramètres définis (ignore les undefined)
+   * 3. Envoie une requête HTTP GET vers l’endpoint `${API_URL}`
+   * 4. Retourne un Observable<MangaListResponse>
+   * 5. Gestion des erreurs via `handleError`
+   *
+   * Résultat :
+   * - Observable<MangaListResponse>
+   *   -> contient la pagination et la liste des mangas
+   */
+  getMangaSearch(page?: string, limit?: string): Observable<MangaListResponse> {
     let params = new HttpParams();
 
     if (page !== undefined) {
@@ -46,58 +44,24 @@ export class MangaService {
     if (limit !== undefined) {
       params = params.set('limit', limit);
     }
-    if (q !== undefined) {
-      params = params.set('q', q);
-    }
-    if (type !== undefined) {
-      params = params.set('type', type);
-    }
-    if (score !== undefined) {
-      params = params.set('score', score);
-    }
-    if (min_score !== undefined) {
-      params = params.set('min_score', min_score);
-    }
-    if (max_score !== undefined) {
-      params = params.set('max_score', max_score);
-    }
-    if (status !== undefined) {
-      params = params.set('status', status);
-    }
-    if (sfw !== undefined) {
-      params = params.set('sfw', sfw);
-    }
-    if (genres !== undefined) {
-      params = params.set('genres', genres);
-    }
-    if (genres_exclude !== undefined) {
-      params = params.set('genres_exclude', genres_exclude);
-    }
-    if (order_by !== undefined) {
-      params = params.set('order_by', order_by);
-    }
-    if (sort !== undefined) {
-      params = params.set('sort', sort);
-    }
-    if (letter !== undefined) {
-      params = params.set('letter', letter);
-    }
-    if (magazines !== undefined) {
-      params = params.set('magazines', magazines);
-    }
-    if (start_date !== undefined) {
-      params = params.set('start_date', start_date);
-    }
-    if (end_date !== undefined) {
-      params = params.set('end_date', end_date);
-    }
 
     return this.http
       .get<MangaListResponse>(`${this.API_URL}?`, { params })
       .pipe(catchError(this.handleError));
   }
 
-  // Récupérer un manga par id
+  /**
+   * getMangaById
+   * ----------
+   * Récupère un manga via son identifiant unique.
+   *
+   * Paramètres :
+   * - mangaId : number -> identifiant unique du manga
+   *
+   * Retour :
+   * - Observable émettant l’objet `MangaInfos`
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   getMangaById(mangaId: number): Observable<{ data: MangaInfos }> {
     return this.http
       .get<{ data: MangaInfos }>(`${this.API_URL}/${mangaId}`)

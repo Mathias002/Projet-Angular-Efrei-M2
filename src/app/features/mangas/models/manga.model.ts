@@ -1,4 +1,8 @@
-// Interface les infos des mangas
+/**
+ * MangaInfos
+ * ----------
+ * Représente les informations des mangas renvoyées par l’API.
+ */
 export interface MangaInfos {
   mal_id: number;
   url: string;
@@ -50,7 +54,20 @@ export interface MangaInfos {
   demographics: { mal_id: number; name: string; url: string }[];
 }
 
-// Interface pour la pagination
+/**
+ * Pagination
+ * ----------
+ * Représente les informations de pagination renvoyées par l’API.
+ *
+ * Propriétés :
+ * - last_visible_page : numéro de la dernière page visible
+ * - has_next_page     : indique s’il existe une page suivante
+ * - current_page      : numéro de la page actuelle
+ * - items             : détails sur les éléments paginés
+ *    - count   : nombre d’éléments renvoyés dans cette page
+ *    - total   : nombre total d’éléments disponibles
+ *    - per_page: nombre d’éléments par page
+ */
 export interface Pagination {
   last_visible_page: number;
   has_next_page: boolean;
@@ -62,7 +79,16 @@ export interface Pagination {
   };
 }
 
-// Interface pour la réponse complète
+/**
+ * MangaListResponse
+ * -----------------
+ * Représente la structure complète de la réponse API
+ * lors de la récupération d’une liste de mangas.
+ *
+ * Propriétés :
+ * - pagination : métadonnées de pagination
+ * - data       : tableau contenant les mangas (MangaInfos[])
+ */
 export interface MangaListResponse {
   pagination: Pagination;
   data: MangaInfos[];

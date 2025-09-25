@@ -1,0 +1,389 @@
+@if (!pageLoading() && isAPIJoignable()) {
+  <section class="px-4 py-24 mx-auto max-w-7xl">
+    <div class="w-full mx-auto text-left md:w-11/12 xl:w-9/12 md:text-center">
+      <h1
+        class="mb-6 text-4xl font-extrabold leading-none tracking-normal text-gray-900 md:text-6xl md:tracking-tight"
+      >
+        <span class="block w-full text-black bg-clip-text lg:inline"
+          >Find your mangas among more than {{ this.floorMangaCount() }} !!</span
+        >
+      </h1>
+    </div>
+  </section>
+
+  <section>
+    <div
+      class="mx-auto opacity-0 select-none"
+      style="max-width: 85%; translate: none; rotate: none; scale: none; opacity: 1"
+    >
+      <ul id="gallery" class="grid grid-cols-2 gap-6 lg:grid-cols-5">
+        @for (manga of mangaList()?.data; track manga.mal_id) {
+          <li
+            class="relative group transform transition-all duration-300 hover:scale-105 hover:z-10"
+          >
+            <!-- Image avec overlay gradient -->
+            <div class="relative overflow-hidden rounded-lg shadow-lg">
+              <img
+                src="{{ manga.images.webp.image_url }}"
+                class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-110"
+                style="aspect-ratio: 0.666667 / 1"
+                alt="{{ manga.title }}"
+                loading="lazy"
+              />
+
+              <!-- Overlay gradient -->
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              ></div>
+
+              <!-- Badge de score (toujours visible) -->
+              <div
+                class="absolute top-2 right-2 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1 {{
+                  getScoreColor(manga.score)
+                }} text-xs font-semibold flex items-center"
+              >
+                <svg class="w-3 h-3 mr-1 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                  />
+                </svg>
+                {{ formatScore(manga.score) }}
+              </div>
+
+              <!-- Badge de statut (si disponible) -->
+              @if (manga.status) {
+                <div
+                  class="absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-medium text-white"
+                  [ngClass]="{
+                    'bg-green-500/80': manga.status === 'Publishing',
+                    'bg-blue-500/80': manga.status === 'Finished',
+                    'bg-yellow-500/80': manga.status === 'On Hiatus',
+                    'bg-gray-500/80': manga.status === 'Discontinued',
+                  }"
+                >
+                  {{ getStatusText(manga.status) }}
+                </div>
+              }
+
+              <!-- Informations overlay (visible au hover) -->
+              <div
+                class="absolute inset-0 flex flex-col justify-end p-4 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0"
+              >
+                <!-- Titre -->
+                <h3 class="font-bold text-lg mb-2 line-clamp-2 drop-shadow-md">
+                  {{ manga.title }}
+                </h3>
+
+                <!-- Titre alternatif si disponible -->
+                @if (manga.title_english && manga.title_english !== manga.title) {
+                  <p class="text-sm text-gray-200 mb-2 line-clamp-1 drop-shadow-md">
+                    {{ manga.title_english }}
+                  </p>
+                }
+
+                <!-- Informations principales -->
+                <div class="space-y-1 text-sm">
+                  <!-- Volumes et Chapitres -->
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <span class="flex items-center">
+                        <svg
+                          class="w-4 h-4 mr-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                          />
+                        </svg>
+                        {{ manga.volumes || '?' }} vol.
+                      </span>
+                      @if (manga.chapters) {
+                        <span class="flex items-center">
+                          <svg
+                            class="w-4 h-4 mr-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                          {{ manga.chapters }} ch.
+                        </span>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Année de publication -->
+                  @if (manga.published.prop.from.year) {
+                    <div class="flex items-center">
+                      <svg
+                        class="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      {{ manga.published.prop.from.year }}
+                    </div>
+                  }
+
+                  <!-- Genres (max 2-3) -->
+                  @if (manga.genres && manga.genres.length > 0) {
+                    <div class="flex flex-wrap gap-1 mt-2">
+                      @for (genre of manga.genres.slice(0, 3); track genre.mal_id) {
+                        <span
+                          class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium"
+                        >
+                          {{ genre.name }}
+                        </span>
+                      }
+                      @if (manga.genres.length > 3) {
+                        <span class="px-2 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs">
+                          +{{ manga.genres.length - 3 }}
+                        </span>
+                      }
+                    </div>
+                  }
+
+                  <!-- Popularité/Ranking -->
+                  @if (manga.popularity || manga.rank) {
+                    <div class="flex items-center justify-between text-xs mt-2">
+                      @if (manga.rank) {
+                        <span class="flex items-center">
+                          <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                              fill-rule="evenodd"
+                              d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                          #{{ manga.rank }}
+                        </span>
+                      }
+                      @if (manga.popularity) {
+                        <span class="flex items-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="24px"
+                            viewBox="0 -960 960 960"
+                            width="24px"
+                            fill="#e3e3e3"
+                          >
+                            <path
+                              d="M240-400q0 52 21 98.5t60 81.5q-1-5-1-9v-9q0-32 12-60t35-51l113-111 113 111q23 23 35 51t12 60v9q0 4-1 9 39-35 60-81.5t21-98.5q0-50-18.5-94.5T648-574q-20 13-42 19.5t-45 6.5q-62 0-107.5-41T401-690q-39 33-69 68.5t-50.5 72Q261-513 250.5-475T240-400Zm240 52-57 56q-11 11-17 25t-6 29q0 32 23.5 55t56.5 23q33 0 56.5-23t23.5-55q0-16-6-29.5T537-292l-57-56Zm0-492v132q0 34 23.5 57t57.5 23q18 0 33.5-7.5T622-658l18-22q74 42 117 117t43 163q0 134-93 227T480-80q-134 0-227-93t-93-227q0-129 86.5-245T480-840Z"
+                            />
+                          </svg>
+                          {{ manga.popularity }}
+                        </span>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <!-- Actions (boutons d'interaction) -->
+                <div class="flex justify-between items-center mt-3 pt-2 border-t border-white/20">
+                  <button
+                    (click)="openAddToCollectionModal(manga, $event)"
+                    class="flex items-center px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium hover:bg-white/30 transition-colors"
+                  >
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                    Ajouter
+                  </button>
+                  <button
+                    class="flex items-center px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium hover:bg-white/30 transition-colors"
+                    (click)="openDetails(manga)"
+                  >
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    Détails
+                  </button>
+                </div>
+              </div>
+
+              <!-- Loading placeholder -->
+              <div
+                class="absolute inset-0 bg-gray-200 animate-pulse rounded-lg"
+                [hidden]="!imageLoading()"
+                (load)="imageLoading.set(false)"
+              ></div>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+
+  <app-add-manga-to-collection-modal
+    [isOpen]="showAddToCollectionModal()"
+    [manga]="selectedMangaForCollection()"
+    (closeModal)="closeAddToCollectionModal()"
+    (mangaAdded)="onMangaAddedToCollection()"
+  ></app-add-manga-to-collection-modal>
+
+  <app-manga-details-modal
+    [manga]="selectedManga()"
+    [isOpen]="showDetailsMangaModal()"
+    (closeModal)="closeDetails()"
+  ></app-manga-details-modal>
+
+  <mat-paginator
+    class="custom-paginator"
+    [length]="mangaCount()"
+    [pageSize]="25"
+    [showFirstLastButtons]="true"
+    [pageSizeOptions]="[5, 10, 15, 20, 25]"
+    [pageIndex]="currentPage"
+    (page)="handlePageEvent($event)"
+  >
+  </mat-paginator>
+
+  <app-back-to-top></app-back-to-top>
+} @else if (pageLoading()) {
+  <div class="container-wheel-and-hamster">
+    <div
+      aria-label="Orange and tan hamster running in a metal wheel"
+      role="img"
+      class="wheel-and-hamster"
+      [hidden]="!pageLoading()"
+      (load)="pageLoading.set(false)"
+    >
+      <div class="wheel"></div>
+      <div class="hamster">
+        <div class="hamster__body">
+          <div class="hamster__head">
+            <div class="hamster__ear"></div>
+            <div class="hamster__eye"></div>
+            <div class="hamster__nose"></div>
+          </div>
+          <div class="hamster__limb hamster__limb--fr"></div>
+          <div class="hamster__limb hamster__limb--fl"></div>
+          <div class="hamster__limb hamster__limb--br"></div>
+          <div class="hamster__limb hamster__limb--bl"></div>
+          <div class="hamster__tail"></div>
+        </div>
+      </div>
+      <div class="spoke"></div>
+    </div>
+  </div>
+} @else if (!isAPIJoignable()) {
+  <!-- From Uiverse.io by Sophiek9h -->
+  <div class="main_wrapper">
+    <div class="main">
+      <div class="antenna">
+        <div class="antenna_shadow"></div>
+        <div class="a1"></div>
+        <div class="a1d"></div>
+        <div class="a2"></div>
+        <div class="a2d"></div>
+        <div class="a_base"></div>
+      </div>
+      <div class="tv">
+        <div class="cruve">
+          <svg
+            class="curve_svg"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 189.929 189.929"
+            xml:space="preserve"
+          >
+            <path
+              d="M70.343,70.343c-30.554,30.553-44.806,72.7-39.102,115.635l-29.738,3.951C-5.442,137.659,11.917,86.34,49.129,49.13
+            C86.34,11.918,137.664-5.445,189.928,1.502l-3.95,29.738C143.041,25.54,100.895,39.789,70.343,70.343z"
+            ></path>
+          </svg>
+        </div>
+        <div class="display_div">
+          <div class="screen_out">
+            <div class="screen_out1">
+              <div class="screen">
+                <span class="notfound_text">Network Error :(</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="lines">
+          <div class="line1"></div>
+          <div class="line2"></div>
+          <div class="line3"></div>
+        </div>
+        <div class="buttons_div">
+          <div class="b1">
+            <div></div>
+          </div>
+          <div class="b2"></div>
+          <div class="speakers">
+            <div class="g1">
+              <div class="g11"></div>
+              <div class="g12"></div>
+              <div class="g13"></div>
+            </div>
+            <div class="g"></div>
+            <div class="g"></div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="base1"></div>
+        <div class="base2"></div>
+        <div class="base3"></div>
+      </div>
+    </div>
+    @if (errorMessage()) {
+      <div
+        class="relative w-fit-content flex flex-wrap items-center justify-center p-2 rounded-lg text-base font-medium [transition:all_0.5s_ease] border-solid border border-[#f85149] text-[#b22b2b] [&amp;_svg]:text-[#b22b2b] group bg-[linear-gradient(#f851491a,#f851491a)]"
+      >
+        <p class="flex flex-row items-center mr-auto gap-x-2">
+          <svg
+            stroke="currentColor"
+            fill="none"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            height="28"
+            width="28"
+            class="h-7 w-7"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"
+            ></path>
+            <path d="M12 9v4"></path>
+            <path d="M12 17h.01"></path>
+          </svg>
+          {{ errorMessage() }}
+        </p>
+      </div>
+    }
+  </div>
+}
