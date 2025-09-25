@@ -47,8 +47,7 @@ export class UsersController {
    * @returns l'utilisateur modifiée ou une erreur si les données sont invalides
    */
   @Put(':userId')
-  @Role('admin')
-  @Role('user')
+  @Role('admin', 'user')
   async update(
     @Param('userId') userId: string,
     @Body() updateUserDto: UpdateUserDto
@@ -65,8 +64,7 @@ export class UsersController {
    * @returns l'utilisateur supprimée ou une erreur si les données sont invalides
    */
   @Delete(':userId')
-  @Role('admin')
-  @Role('user')
+  @Role('admin', 'user')
   async delete(@Param('userId') userId: string): Promise<User | null> {
     return this.usersService.delete(userId);
   }

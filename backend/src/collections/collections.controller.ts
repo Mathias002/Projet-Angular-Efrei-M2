@@ -64,7 +64,7 @@ export class CollectionsController {
    * @returns la collection supprimée ou une erreur si les données sont invalides
    */
   @Delete(':collectionId')
-  async delte(@Param('collectionId') collectionId: string): Promise<Collection | null> {
+  async delete(@Param('collectionId') collectionId: string): Promise<Collection | null> {
     return this.collectionsService.delete(collectionId);
   }
 
