@@ -14,7 +14,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 })
 export class AdminComponent implements OnInit {
   //#region Signal
-
   // Signals relatif a/aux utilisateurs
   users = signal<UserInfos[]>([]);
   selectedUser = signal<UserInfos | null>(null);
@@ -34,14 +33,11 @@ export class AdminComponent implements OnInit {
   showCreateUserModal = signal<boolean>(false);
   showUpdateModal = signal<boolean>(false);
   showDeleteModal = signal<boolean>(false);
-
   //#endregion
 
   //#region Formulaire
-
-  // Initialisation du FormGroup
+  // FormGroup
   userUpdateRoleForm!: FormGroup;
-
   //#endregion
 
   constructor(
@@ -56,7 +52,6 @@ export class AdminComponent implements OnInit {
   }
 
   //#region Formulaire
-
   /**
    * initForm
    * --------
@@ -126,11 +121,9 @@ export class AdminComponent implements OnInit {
       },
     });
   }
-
   //#endregion
 
   //#region allUsers
-
   /**
    * getAllUsers
    * --------
@@ -169,11 +162,8 @@ export class AdminComponent implements OnInit {
   refreshUsers(): void {
     this.getAllUsers();
   }
-
   //#endregion
-
   //#region userDetails
-
   /**
    * showUserDetails
    * --------
@@ -210,11 +200,9 @@ export class AdminComponent implements OnInit {
     this.showDetailsModal.set(false);
     this.selectedUser.set(null);
   }
-
   //#endregion
 
   //#region createUser
-
   /**
    * displayCreateUserModal
    * --------
@@ -232,11 +220,9 @@ export class AdminComponent implements OnInit {
   closeCreateUserModal(): void {
     this.showCreateUserModal.set(false);
   }
-
   //#endregion createUSer
 
   //#region updateUser
-
   /**
    * displayUpdateUserRoleModal
    * --------
@@ -269,11 +255,9 @@ export class AdminComponent implements OnInit {
   closeUpdateUserRoleModal(): void {
     this.showUpdateModal.set(false);
   }
-
   //#endregion
 
   //#region deleteUser
-
   /**
    * confirmDeleteUser
    * --------
@@ -300,13 +284,12 @@ export class AdminComponent implements OnInit {
    * cancelDelete
    * --------
    * Annulation de la suppression d'un utilisateur
-   *
    */
   cancelDelete(): void {
     // Masquage du modal de suppression d'un utilisateur
     this.showDeleteModal.set(false);
 
-    // Reinitialisation du signam de l'utilisateur à supprimer
+    // Reinitialisation du signal de l'utilisateur à supprimer
     this.userToDelete.set(null);
   }
 
@@ -331,7 +314,7 @@ export class AdminComponent implements OnInit {
    */
   executeDelete(): void {
     const user = this.userToDelete();
-    if (!user) return; // Aucun utilisateur sélectionné → arrêt
+    if (!user) return; // Aucun utilisateur sélectionné -> arrêt
 
     this.deleting.set(true); // Indique que la suppression est en cours
 
@@ -351,11 +334,9 @@ export class AdminComponent implements OnInit {
       },
     });
   }
-
   //#endregion
 
   //#region other
-
   /**
    * formatDate
    * --------
@@ -393,6 +374,5 @@ export class AdminComponent implements OnInit {
         return 'bg-gray-100 text-gray-800';
     }
   }
-
   //#endregion
 }

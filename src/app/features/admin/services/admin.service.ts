@@ -49,7 +49,7 @@ export class AdminService {
    * Met à jour le rôle d'un utilisateur via son identifiant unique.
    *
    * Paramètres :
-   * - userId : string -> identifiant unique de l’utilisateur à supprimer
+   * - userId : string -> identifiant unique de l’utilisateur à mettre à jour
    * - userData : interface -> données de mise à jour du rôle
    *
    * Retour :
@@ -68,7 +68,7 @@ export class AdminService {
    * Récupère un utilisateur via son identifiant unique.
    *
    * Paramètres :
-   * - userId : string -> identifiant unique de l’utilisateur à supprimer
+   * - userId : string -> identifiant unique de l’utilisateur à récupérer
    *
    * Retour :
    * - Observable émettant l’objet `UserInfos` de l’utilisateur
