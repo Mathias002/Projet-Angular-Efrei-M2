@@ -24,17 +24,12 @@ export class RolesGuard implements CanActivate {
    * @returns true si l'utilisateur possede le bon rôle, sinon lève une exception
    */
   canActivate(context: ExecutionContext): boolean {
-    // Récupère le rôle requis depuis la metadonnée `role`
-    const requiredRole = this.reflector.get<string>('role', context.getHandler());
-
-    // Si pas de rôle requis on laisse la requête s'executer
-    if (!requiredRole) return true;
+    const requiredRoles = this.reflector.get<string[]>('roles', context.getHandler());
+    if (!requiredRoles) return true;
 
     // Recupère l'utilisateur depuis la requête `req.user`
     const { user } = context.switchToHttp().getRequest();
-
-    // Vérifie s'il existe un utilisateur et si son rôle correspond à celui requis
-    if (!user || user.role !== requiredRole) {
+    if (!user || !requiredRoles.includes(user.role)) {
       throw new ForbiddenException('Accès refusé');
     }
 
