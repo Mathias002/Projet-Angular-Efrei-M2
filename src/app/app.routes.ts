@@ -43,19 +43,11 @@ export const routes: Routes = [
   {
     path: 'mangas',
     loadComponent: () =>
-      import('./features/mangas/components/manga.component').then((c) => c.MangaListComponent),
+      import('./features/mangas/components/mangasList/manga.component').then(
+        (c) => c.MangaListComponent,
+      ),
     canActivate: [AuthGuard],
   },
-  //   {
-  //     path: 'profile',
-  //     loadComponent: () => import('./profile/profile.component').then(c => c.ProfileComponent),
-  //     canActivate: [AuthGuard]
-  //   },
-  //   {
-  //     path: 'settings',
-  //     loadComponent: () => import('./settings/settings.component').then(c => c.SettingsComponent),
-  //     canActivate: [AuthGuard]
-  //   },
 
   // Redirections
   {
