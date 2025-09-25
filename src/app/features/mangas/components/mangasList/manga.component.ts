@@ -38,7 +38,8 @@ export class MangaListComponent implements OnInit {
   pageLoading = signal<boolean>(true);
 
   // Signal Current Page
-  currentPage = signal<number>(0);
+  currentPage = signal<number>(1);
+  sizePage = signal<number>(25);
 
   // Signal API
   isAPIJoignable = signal<boolean>(false);
@@ -62,7 +63,6 @@ export class MangaListComponent implements OnInit {
   }
 
   //#region Mangas
-
   /**
    * getAllMangas
    * ------------
@@ -91,50 +91,52 @@ export class MangaListComponent implements OnInit {
    *      -> Met à jour `isAPIJoignable` et `errorMessage`
    */
   getAllMangas(): void {
-    this.mangaService.getMangaSearch().subscribe({
-      next: (response) => {
-        // Succès - API accessible
-        this.isAPIJoignable.set(true);
-        this.mangaList.set(response);
-        this.mangaCount.set(this.mangaList()!.pagination.items.total);
-        this.floorMangaCount.set(Math.floor(this.mangaCount()! / 1000) * 1000);
-        this.pageLoading.set(false);
-      },
-      error: (error) => {
-        console.error('Erreur lors de la récupération des mangas:', error);
-        this.pageLoading.set(false);
+    this.mangaService
+      .getMangaSearch(this.currentPage().toString(), this.sizePage().toString())
+      .subscribe({
+        next: (response) => {
+          // Succès - API accessible
+          this.isAPIJoignable.set(true);
+          this.mangaList.set(response);
+          this.mangaCount.set(this.mangaList()!.pagination.items.total);
+          this.floorMangaCount.set(Math.floor(this.mangaCount()! / 1000) * 1000);
+          this.pageLoading.set(false);
+        },
+        error: (error) => {
+          console.error('Erreur lors de la récupération des mangas:', error);
+          this.pageLoading.set(false);
 
-        // Vérifier le type d'erreur pour déterminer si l'API est joignable
-        if (this.isNetworkError(error)) {
-          this.isAPIJoignable.set(false);
-          this.errorMessage.set(
-            'Impossible de contacter le serveur. Vérifiez votre connexion internet.',
-          );
-        } else if (error.status === 0) {
-          // Erreur CORS ou serveur complètement inaccessible
-          this.isAPIJoignable.set(false);
-          this.errorMessage.set('Le serveur est inaccessible. Veuillez réessayer plus tard.');
-        } else if (error.status >= 500) {
-          // Erreur serveur
-          this.isAPIJoignable.set(false);
-          this.errorMessage.set(
-            'Le serveur rencontre des difficultés. Veuillez réessayer plus tard.',
-          );
-        } else if (error.status === 404) {
-          // Endpoint non trouvé - API joignable mais endpoint incorrect
-          this.isAPIJoignable.set(true);
-          this.errorMessage.set('Service non disponible. Les endpoint API ont peut-être changé.');
-        } else if (error.status >= 400 && error.status < 500) {
-          // Erreur client - API joignable mais problème avec la requête
-          this.isAPIJoignable.set(true);
-          this.errorMessage.set('Problème avec la requête. Veuillez réessayer.');
-        } else {
-          // Autres erreurs
-          this.isAPIJoignable.set(false);
-          this.errorMessage.set('Une erreur inattendue est survenue.');
-        }
-      },
-    });
+          // Vérifier le type d'erreur pour déterminer si l'API est joignable
+          if (this.isNetworkError(error)) {
+            this.isAPIJoignable.set(false);
+            this.errorMessage.set(
+              'Impossible de contacter le serveur. Vérifiez votre connexion internet.',
+            );
+          } else if (error.status === 0) {
+            // Erreur CORS ou serveur complètement inaccessible
+            this.isAPIJoignable.set(false);
+            this.errorMessage.set('Le serveur est inaccessible. Veuillez réessayer plus tard.');
+          } else if (error.status >= 500) {
+            // Erreur serveur
+            this.isAPIJoignable.set(false);
+            this.errorMessage.set(
+              'Le serveur rencontre des difficultés. Veuillez réessayer plus tard.',
+            );
+          } else if (error.status === 404) {
+            // Endpoint non trouvé - API joignable mais endpoint incorrect
+            this.isAPIJoignable.set(true);
+            this.errorMessage.set('Service non disponible. Les endpoint API ont peut-être changé.');
+          } else if (error.status >= 400 && error.status < 500) {
+            // Erreur client - API joignable mais problème avec la requête
+            this.isAPIJoignable.set(true);
+            this.errorMessage.set('Problème avec la requête. Veuillez réessayer.');
+          } else {
+            // Autres erreurs
+            this.isAPIJoignable.set(false);
+            this.errorMessage.set('Une erreur inattendue est survenue.');
+          }
+        },
+      });
   }
 
   // Vérifier si c'est une erreur réseau
@@ -239,7 +241,6 @@ export class MangaListComponent implements OnInit {
   //#endregion
 
   //#region Ajout manga collection
-
   /**
    * openAddToCollectionModal
    * ------------------------
@@ -292,7 +293,6 @@ export class MangaListComponent implements OnInit {
   //#endregion
 
   //#region Pagination
-
   /**
    * handlePageEvent
    * ---------------
