@@ -62,7 +62,6 @@ export class AddMangaToCollectionModalComponent implements OnInit, OnChanges {
   }
 
   //#region Formulaire
-
   /**
    * initForm
    * --------
@@ -82,8 +81,25 @@ export class AddMangaToCollectionModalComponent implements OnInit, OnChanges {
     });
   }
 
+  /**
+   * Ajouter un manga dans une collection
+   * ------------------------------------
+   * - Vérifie que :
+   *   -> Le formulaire est valide
+   *   -> Un manga est bien sélectionné
+   *   -> Au moins un tome est choisi
+   * - Construit l’objet `MangaCollection` à partir du formulaire et des volumes sélectionnés
+   * - Appelle le service `collectionService.addMangaToCollection`
+   * - Si succès :
+   *    -> Émet l’événement `mangaAdded` avec la collection mise à jour et le manga concerné
+   *    -> Ferme la modal
+   *    -> Réinitialise l’état `submitting`
+   * - Si échec :
+   *    -> Affiche un message d’erreur
+   *    -> Réinitialise l’état `submitting`
+   */
   submitForm(): void {
-    if (this.addMangaForm.invalid || !this.manga || this.selectedVolumes.length === 0) return;
+    if (this.addMangaForm.invalid || !this.manga || this.selectedVolumes().length === 0) return;
 
     this.submitting.set(true);
     this.errorMessage.set('');
@@ -105,8 +121,9 @@ export class AddMangaToCollectionModalComponent implements OnInit, OnChanges {
         this.submitting.set(false);
       },
       error: (error) => {
-        this.errorMessage =
-          error.message || 'Ajout du manga en base de données interrompu. Une erreur est survenue';
+        this.errorMessage.set(
+          error.message || 'Ajout du manga en base de données interrompu. Une erreur est survenue',
+        );
         this.submitting.set(false);
       },
     });
@@ -146,7 +163,6 @@ export class AddMangaToCollectionModalComponent implements OnInit, OnChanges {
   }
 
   //#region Volume
-
   /**
    * addVolume
    * ---------
@@ -236,13 +252,11 @@ export class AddMangaToCollectionModalComponent implements OnInit, OnChanges {
   get volumeInputMode(): 'individual' | 'range' {
     return this.addMangaForm.get('volumeInputMode')?.value;
   }
-
   //#endregion
 
   //#endregion
 
   //#region User
-
   /**
    * getCurrentUser
    * --------------
@@ -261,11 +275,9 @@ export class AddMangaToCollectionModalComponent implements OnInit, OnChanges {
       }
     });
   }
-
   //#endregion
 
   //#region Collection
-
   /**
    * loadUserCollections
    * -------------------
@@ -296,6 +308,5 @@ export class AddMangaToCollectionModalComponent implements OnInit, OnChanges {
       },
     });
   }
-
   //#endregion
 }

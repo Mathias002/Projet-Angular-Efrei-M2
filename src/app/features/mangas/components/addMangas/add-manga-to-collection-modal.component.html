@@ -72,7 +72,7 @@
             >
               <option value="">Sélectionnez une collection</option>
               @for (collection of collections(); track collection._id) {
-                <option>
+                <option value="{{ collection._id }}">
                   {{ collection.name }}
                 </option>
               }
@@ -176,7 +176,7 @@
             }
 
             <!-- Liste des tomes sélectionnés -->
-            @if (selectedVolumes.length > 0) {
+            @if (selectedVolumes().length > 0) {
               <div class="mt-3">
                 <div class="flex flex-wrap gap-2">
                   @for (volume of selectedVolumes(); track volume) {
