@@ -26,13 +26,37 @@ export class CollectionService {
       .pipe(catchError(this.handleError));
   }
 
-  // Supprimer une collection
+  /**
+   * deleteCollection
+   * ----------
+   * Supprime une collection via son identifiant unique.
+   *
+   * Paramètres :
+   * - collectionId : string -> identifiant unique de la collection à supprimer
+   *
+   * Retour :
+   * - Observable émettant l’objet `Collection` de la collection supprimée
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   deleteCollection(collectionId: string): Observable<Collection> {
     return this.http
       .delete<Collection>(`${this.API_URL}/${collectionId}`)
       .pipe(catchError(this.handleError));
   }
 
+  /**
+   * updateCollection
+   * ----------
+   * Met à jour une collection via son identifiant unique.
+   *
+   * Paramètres :
+   * - collectionId : string -> identifiant unique de la collection à mettre à jour
+   * - collectionData : interface -> données de mise à jour de la collection
+   *
+   * Retour :
+   * - Observable émettant l’objet `Collection` de la collection mis à jour
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   updateCollection(
     collectionId: string,
     collectionData: UpdateCollectionRequest,
@@ -42,19 +66,55 @@ export class CollectionService {
       .pipe(catchError(this.handleError));
   }
 
+  /**
+   * getCollectionsByUser
+   * ----------
+   * Récupère les collections d'un utilisateur via son identifiant unique.
+   *
+   * Paramètres :
+   * - userId : string -> identifiant unique de l'utilisateur
+   *
+   * Retour :
+   * - Observable émettant un tableau de l’objet `Collection`
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   getCollectionsByUser(userId: string): Observable<Collection[]> {
     return this.http
       .get<Collection[]>(`${this.API_URL}/user/${userId}`)
       .pipe(catchError(this.handleError));
   }
 
+  /**
+   * getCollectionById
+   * ----------
+   * Récupère une collection via son identifiant unique.
+   *
+   * Paramètres :
+   * - collectionId : string -> identifiant unique de la collection à récupérer
+   *
+   * Retour :
+   * - Observable émettant l’objet `Collection` de la collection récupérée
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   getCollectionById(collectionId: string): Observable<Collection> {
     return this.http
       .get<Collection>(`${this.API_URL}/${collectionId}`)
       .pipe(catchError(this.handleError));
   }
 
-  // Ajouter un manga dans une collection
+  /**
+   * addMangaToCollection
+   * ----------
+   * Met à jour le rôle d'un utilisateur via son identifiant unique.
+   *
+   * Paramètres :
+   * - collectionId : string -> identifiant unique de la collection où ajouter le manga
+   * - addMangaCollection : interface -> données d'ajout du manga'
+   *
+   * Retour :
+   * - Observable émettant l’objet `Collection` de la collection
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   addMangaToCollection(
     collectionId: string,
     addMangaCollection: MangaCollection,
@@ -64,14 +124,39 @@ export class CollectionService {
       .pipe(catchError(this.handleError));
   }
 
-  // Supprimer un manga dans une collection
+  /**
+   * deleteMangaOfCollection
+   * ----------
+   * Supprime un manga d'une collection via son identifiant unique ainsi que celui de la collection.
+   *
+   * Paramètres :
+   * - collectionId : string -> identifiant unique de la collection
+   * - mangaId : string -> identifiant unique du manga à supprimer
+   *
+   * Retour :
+   * - Observable émettant l’objet `Collection`
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   deleteMangaOfCollection(collectionId: string, mangaId: string): Observable<Collection> {
     return this.http
       .delete<Collection>(`${this.API_URL}/${collectionId}/delete-manga/${mangaId}`)
       .pipe(catchError(this.handleError));
   }
 
-  // Mettre à jour un manga dans une collection
+  /**
+   * updateMangaOfCollection
+   * ----------
+   * Met à jour un manga d'une collection via son identifiant unique ainsi que celui de la collection.
+   *
+   * Paramètres :
+   * - mangaId : string -> identifiant unique du manga à supprimer
+   * - collectionId : string -> identifiant unique de la collection
+   * - updateMangaCollection : interface -> données de mise à jour du manga
+   *
+   * Retour :
+   * - Observable émettant l’objet `Collection` de la collection mis à jour
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   updateMangaOfCollection(
     collectionId: string,
     mangaId: string,
