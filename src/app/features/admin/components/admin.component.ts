@@ -304,7 +304,6 @@ export class AdminComponent implements OnInit {
    * 3. Active le signal `deleting` pour indiquer que l'opération est en cours
    * 4. Appelle la méthode `deleteUser` du service `adminService`
    * 5. En cas de succès :
-   *    - Met à jour la liste des utilisateurs (`users`) en retirant l'utilisateur supprimé
    *    - Ferme la modale de suppression
    *    - Réinitialise `userToDelete` et `deleting`
    * 6. En cas d'erreur :
@@ -320,12 +319,10 @@ export class AdminComponent implements OnInit {
 
     this.adminService.deleteUser(user._id).subscribe({
       next: () => {
-        // Mise à jour de la liste des utilisateurs pour retirer l'utilisateur supprimé
-        this.users.update((users) => users.filter((u) => u._id !== user._id));
-
         this.showDeleteModal.set(false); // Ferme le modal
         this.userToDelete.set(null); // Réinitialise l'utilisateur sélectionné
         this.deleting.set(false); // Réinitialise le signal d'état
+        this.refreshUsers();
       },
       error: (err) => {
         console.error('Error deleting user:', err); // Log de l'erreur pour debug
