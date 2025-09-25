@@ -4,16 +4,35 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { updateUserRequest, updateUserResponse } from '../models/profile.model';
+import { API_Backend } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProfileService {
-  private readonly API_URL = 'http://localhost:3000/users';
+  private readonly API_URL = `${API_Backend.apiUrl}/users`;
 
   constructor(private http: HttpClient) {}
 
-  // update user
+  /**
+   * updateUser
+   * ----------
+   * Met à jour les informations d’un utilisateur existant via l’API.
+   *
+   * Paramètres :
+   * - userId   : identifiant unique de l’utilisateur à modifier
+   * - userData : objet contenant les nouvelles données de l’utilisateur
+   *
+   * Processus :
+   * 1. Envoie une requête HTTP PUT vers l’endpoint `${API_URL}/{userId}`
+   * 2. Transmet l’objet `userData` dans le corps de la requête
+   * 3. Retourne la réponse typée en `updateUserResponse`
+   * 4. Gestion des erreurs centralisée via `handleError`
+   *
+   * Résultat :
+   * - Observable<updateUserResponse>
+   *   -> contient les informations mises à jour de l’utilisateur
+   */
   updateUser(userId: string, userData: updateUserRequest): Observable<updateUserResponse> {
     return this.http
       .put<updateUserResponse>(`${this.API_URL}/${userId}`, userData)

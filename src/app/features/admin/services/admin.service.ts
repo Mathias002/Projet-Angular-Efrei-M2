@@ -2,40 +2,79 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Router } from '@angular/router';
 import { UpdateRoleRequest, UserInfos } from '../models/admin.model';
+import { API_Backend } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminService {
-  private readonly API_URL = 'http://localhost:3000/users';
+  private readonly API_URL = `${API_Backend.apiUrl}/users`;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-  ) {}
+  constructor(private http: HttpClient) {}
 
-  // Récupérer tout les users
+  /**
+   * getAllUsers
+   * -----------
+   * Récupère la liste complète des utilisateurs depuis l’API.
+   *
+   * Retour :
+   * - Observable émettant un tableau de `UserInfos`
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   getAllUsers(): Observable<UserInfos[]> {
     return this.http.get<UserInfos[]>(`${this.API_URL}`).pipe(catchError(this.handleError));
   }
 
-  // Supprimer un user
+  /**
+   * deleteUser
+   * ----------
+   * Supprime un utilisateur via son identifiant unique.
+   *
+   * Paramètres :
+   * - userId : string -> identifiant unique de l’utilisateur à supprimer
+   *
+   * Retour :
+   * - Observable émettant l’objet `UserInfos` de l’utilisateur supprimé
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   deleteUser(userId: string): Observable<UserInfos> {
     return this.http
       .delete<UserInfos>(`${this.API_URL}/${userId}`)
       .pipe(catchError(this.handleError));
   }
 
-  // update user
-  updateRoleUser(userId: string, userData: UpdateRoleRequest): Observable<UserInfos> {
+  /**
+   * updateRoleUser
+   * ----------
+   * Met à jour le rôle d'un utilisateur via son identifiant unique.
+   *
+   * Paramètres :
+   * - userId : string -> identifiant unique de l’utilisateur à mettre à jour
+   * - userData : interface -> données de mise à jour du rôle
+   *
+   * Retour :
+   * - Observable émettant l’objet `UserInfos` de l’utilisateur mis à jour
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
+  updateRoleUser(userId: string, updateRoleRequest: UpdateRoleRequest): Observable<UserInfos> {
     return this.http
-      .put<UserInfos>(`${this.API_URL}/${userId}`, userData)
+      .put<UserInfos>(`${this.API_URL}/${userId}`, updateRoleRequest)
       .pipe(catchError(this.handleError));
   }
 
-  // Récupérer un user par id
+  /**
+   * getUserById
+   * ----------
+   * Récupère un utilisateur via son identifiant unique.
+   *
+   * Paramètres :
+   * - userId : string -> identifiant unique de l’utilisateur à récupérer
+   *
+   * Retour :
+   * - Observable émettant l’objet `UserInfos` de l’utilisateur
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   getUserById(userId: string): Observable<UserInfos> {
     return this.http.get<UserInfos>(`${this.API_URL}/${userId}`).pipe(catchError(this.handleError));
   }
@@ -72,7 +111,6 @@ export class AdminService {
           errorMessage = `Erreur ${error.status}: ${error.error?.message || error.message}`;
       }
     }
-
     return throwError(() => new Error(errorMessage));
   };
 }

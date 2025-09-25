@@ -1,5 +1,5 @@
 // collections.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CollectionService } from '../services/collection.service';
@@ -14,524 +14,40 @@ import {
   selector: 'app-collections',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  template: `
-    <div class="container mx-auto px-4 py-8 flex flex-col justify-center">
-      <!-- Header -->
-      <div class="flex justify-between items-center mb-8" style="margin-top: 5rem;">
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900">Mes Collections</h1>
-          <p class="text-gray-600 mt-2">Gérez vos collections de manga</p>
-        </div>
-        <button
-          (click)="openCreateModal()"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out flex items-center"
-        >
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
-          </svg>
-          Nouvelle Collection
-        </button>
-      </div>
-
-      <!-- États de chargement et erreur -->
-      <div *ngIf="loading" class="text-center py-12">
-        <svg
-          class="animate-spin h-8 w-8 text-indigo-600 mx-auto mb-4"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          ></circle>
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
-        <p class="text-gray-600">Chargement de vos collections...</p>
-      </div>
-
-      <!-- Message d'erreur -->
-      <div *ngIf="errorMessage" class="mb-6 rounded-md bg-red-50 p-4">
-        <div class="flex">
-          <svg class="h-5 w-5 text-red-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <p class="text-red-800">{{ errorMessage }}</p>
-        </div>
-      </div>
-
-      <!-- Liste des collections -->
-      <div
-        *ngIf="!loading && collections.length > 0"
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
-      >
-        <div
-          *ngFor="let collection of collections"
-          class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
-        >
-          <!-- Header de la carte -->
-          <div class="p-6 border-b border-gray-200">
-            <div class="flex justify-between items-start">
-              <div class="flex-1 min-w-0">
-                <h3 class="text-lg font-semibold text-gray-900 truncate">{{ collection.name }}</h3>
-                <p *ngIf="collection.description" class="text-gray-600 text-sm mt-1 line-clamp-2">
-                  {{ collection.description }}
-                </p>
-              </div>
-
-              <!-- Menu actions -->
-              <div class="ml-4 flex-shrink-0 relative">
-                <button
-                  (click)="toggleActionsMenu(collection._id)"
-                  class="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 5v.01M12 12v.01M12 19v.01"
-                    />
-                  </svg>
-                </button>
-
-                <!-- Dropdown menu -->
-                <div
-                  *ngIf="activeMenuId === collection._id"
-                  class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
-                >
-                  <button
-                    (click)="viewCollection(collection)"
-                    class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                  >
-                    <svg
-                      class="w-4 h-4 inline mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                    Voir les détails
-                  </button>
-                  <button
-                    (click)="editCollection(collection)"
-                    class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                  >
-                    <svg
-                      class="w-4 h-4 inline mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
-                    Modifier
-                  </button>
-                  <hr class="my-1" />
-                  <button
-                    (click)="confirmDelete(collection)"
-                    class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                  >
-                    <svg
-                      class="w-4 h-4 inline mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                    Supprimer
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Statistiques -->
-          <div class="px-6 py-4 bg-gray-50">
-            <div class="flex items-center justify-between text-sm">
-              <div class="flex items-center text-gray-600">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                </svg>
-                <span>{{ collection.mangas.length || 0 }} manga(s)</span>
-              </div>
-              <div class="text-gray-500 text-xs">
-                {{ formatDate(collection.createdAt) }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Message si aucune collection -->
-      <div *ngIf="!loading && collections.length === 0" class="text-center py-12">
-        <svg
-          class="w-16 h-16 mx-auto text-gray-400 mb-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-          />
-        </svg>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune collection</h3>
-        <p class="text-gray-500 mb-4">Créez votre première collection pour organiser vos manga.</p>
-        <button
-          (click)="openCreateModal()"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-        >
-          Créer une collection
-        </button>
-      </div>
-    </div>
-
-    <!-- Modal de création/modification -->
-    <div
-      *ngIf="showModal"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-        <form [formGroup]="collectionForm" (ngSubmit)="submitForm()">
-          <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">
-              {{ editingCollection ? 'Modifier la collection' : 'Nouvelle collection' }}
-            </h3>
-
-            <!-- Nom -->
-            <div class="mb-4">
-              <span class="block text-sm font-medium text-gray-700 mb-2">
-                Nom de la collection *
-              </span>
-              <input
-                type="text"
-                formControlName="name"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                [class.border-red-500]="
-                  collectionForm.get('name')?.invalid && collectionForm.get('name')?.touched
-                "
-                placeholder="Ma collection de manga"
-              />
-              <div
-                *ngIf="collectionForm.get('name')?.invalid && collectionForm.get('name')?.touched"
-                class="mt-1 text-sm text-red-600"
-              >
-                Le nom est requis
-              </div>
-            </div>
-
-            <!-- Description -->
-            <div class="mb-6">
-              <span class="block text-sm font-medium text-gray-700 mb-2"> Description </span>
-              <textarea
-                formControlName="description"
-                rows="3"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Description de votre collection (optionnel)"
-              ></textarea>
-            </div>
-
-            <!-- Actions -->
-            <div class="flex justify-end space-x-3">
-              <button
-                type="button"
-                (click)="closeModal()"
-                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                [disabled]="collectionForm.invalid || submitting"
-                class="px-4 py-2 bg-indigo-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out"
-              >
-                <span *ngIf="submitting" class="flex items-center">
-                  <svg
-                    class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  {{ editingCollection ? 'Modification...' : 'Création...' }}
-                </span>
-                <span *ngIf="!submitting">
-                  {{ editingCollection ? 'Modifier' : 'Créer' }}
-                </span>
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Modal de confirmation de suppression -->
-    <div
-      *ngIf="showDeleteModal"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-        <div class="p-6">
-          <div class="flex items-center">
-            <div
-              class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center"
-            >
-              <svg
-                class="w-6 h-6 text-red-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                />
-              </svg>
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">Confirmer la suppression</h3>
-              <p class="text-sm text-gray-500 mt-2">
-                Êtes-vous sûr de vouloir supprimer la collection
-                <span class="font-semibold">"{{ collectionToDelete?.name }}"</span> ? Cette action
-                est irréversible.
-              </p>
-            </div>
-          </div>
-
-          <div class="mt-6 flex justify-end space-x-3">
-            <button
-              (click)="cancelDelete()"
-              class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
-            >
-              Annuler
-            </button>
-            <button
-              (click)="executeDelete()"
-              [disabled]="deleting"
-              class="px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out"
-            >
-              <span *ngIf="deleting" class="flex items-center">
-                <svg
-                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Suppression...
-              </span>
-              <span *ngIf="!deleting">Supprimer</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal de détails -->
-    <div
-      *ngIf="showDetailsModal && selectedCollection"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
-        <div class="p-6">
-          <!-- Header -->
-          <div class="flex items-center justify-between border-b border-gray-200 pb-4">
-            <h3 class="text-lg font-medium text-gray-900">{{ selectedCollection.name }}</h3>
-            <button
-              (click)="closeDetailsModal()"
-              class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition ease-in-out duration-150"
-            >
-              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Contenu -->
-          <div class="mt-6">
-            <!-- Description -->
-            <div *ngIf="selectedCollection.description" class="mb-6">
-              <h4 class="text-sm font-medium text-gray-900 mb-2">Description</h4>
-              <p class="text-gray-600 text-sm bg-gray-50 p-3 rounded-md">
-                {{ selectedCollection.description }}
-              </p>
-            </div>
-
-            <!-- Statistiques -->
-            <div class="grid grid-cols-2 gap-4 mb-6">
-              <div class="bg-indigo-50 p-4 rounded-lg">
-                <div class="text-2xl font-bold text-indigo-600">
-                  {{ selectedCollection.mangas.length || 0 }}
-                </div>
-                <div class="text-sm text-indigo-700">Manga(s)</div>
-              </div>
-              <div class="bg-green-50 p-4 rounded-lg">
-                <div class="text-2xl font-bold text-green-600">
-                  {{ getTotalVolumes(selectedCollection) }}
-                </div>
-                <div class="text-sm text-green-700">Volume(s) possédé(s)</div>
-              </div>
-            </div>
-
-            <!-- Liste des manga -->
-            <div>
-              <h4 class="text-sm font-medium text-gray-900 mb-3">Manga dans cette collection</h4>
-              <div
-                *ngIf="selectedCollection.mangas && selectedCollection.mangas.length > 0"
-                class="space-y-3 max-h-64 overflow-y-auto"
-              >
-                <div
-                  *ngFor="let manga of selectedCollection.mangas"
-                  class="flex items-center justify-between p-3 bg-gray-50 rounded-md"
-                >
-                  <div>
-                    <p class="font-medium text-gray-900">Manga ID: {{ manga.idManga }}</p>
-                    <p class="text-sm text-gray-600">
-                      {{ manga.tomesPossedes.length || 0 }} tome(s) possédé(s)
-                      <span
-                        *ngIf="manga.tomesPossedes && manga.tomesPossedes.length > 0"
-                        class="text-xs text-gray-500"
-                      >
-                        ({{ manga.tomesPossedes.join(', ') }})
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div
-                *ngIf="!selectedCollection.mangas || selectedCollection.mangas.length === 0"
-                class="text-center py-8 text-gray-500"
-              >
-                <svg
-                  class="w-12 h-12 mx-auto mb-2 text-gray-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                </svg>
-                <p class="text-sm">Aucun manga dans cette collection</p>
-              </div>
-            </div>
-
-            <!-- Informations -->
-            <div class="mt-6 pt-4 border-t border-gray-200 text-xs text-gray-500">
-              <p>Créée le {{ formatDate(selectedCollection.createdAt) }}</p>
-              <p *ngIf="selectedCollection.updatedAt !== selectedCollection.createdAt">
-                Modifiée le {{ formatDate(selectedCollection.updatedAt) }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
+  templateUrl: './collection.component.html',
 })
 export class CollectionsComponent implements OnInit {
-  collections: Collection[] = [];
-  loading = false;
-  errorMessage = '';
+  //#region Signals
+  // Signal Collection
+  collections = signal<Collection[]>([]);
 
-  // Modals
-  showModal = false;
-  showDeleteModal = false;
-  showDetailsModal = false;
+  // Signal current user
+  currentUserId = signal<string>('');
 
-  // Forms et états
-  collectionForm!: FormGroup;
-  editingCollection: Collection | null = null;
-  collectionToDelete: Collection | null = null;
-  selectedCollection: Collection | null = null;
+  // Signal de message d'erreur
+  errorMessage = signal<string>('');
+
+  // Affichage des Modals
+  showModalEditCreate = signal<boolean>(false);
+  showDeleteModal = signal<boolean>(false);
+  showDetailsModal = signal<boolean>(false);
+
+  // État des modals
+  loading = signal<boolean>(false);
+  editingCollection = signal<Collection | null>(null);
+  collectionToDelete = signal<Collection | null>(null);
+  selectedCollection = signal<Collection | null>(null);
 
   // Actions
-  activeMenuId = '';
-  submitting = false;
-  deleting = false;
+  activeMenuId = signal<string>('');
+  submitting = signal<boolean>(false);
+  deleting = signal<boolean>(false);
+  //#endregion
 
-  currentUserId = '';
+  //#region Formulaire
+  // FormGroup
+  collectionForm!: FormGroup;
+  //#endregion
 
   constructor(
     private collectionService: CollectionService,
@@ -539,170 +55,325 @@ export class CollectionsComponent implements OnInit {
     private fb: FormBuilder,
   ) {}
 
+  // Récupération du currentUser, chargements des collections et initialisations des formulaires
   ngOnInit(): void {
     this.initForm();
     this.getCurrentUser();
     this.loadCollections();
   }
 
+  //#region Formulaire
+  /**
+   * initForm
+   * --------
+   * Initialise le formulaire d'ajout et de mise à jour d'une collection.
+   *
+   * Champs :
+   * - name : string → Nom de la collection (obligatoire)
+   * - description : string → description de la collection (facultatif)
+   *
+   * Validators :
+   * - `Validators.required` → le champ ne peut pas être vide
+   */
   private initForm(): void {
     this.collectionForm = this.fb.group({
-      name: ['', Validators.required],
+      name: ['', Validators.required], // champ obligatoire
       description: [''],
     });
   }
 
-  private getCurrentUser(): void {
-    // Récupérer l'ID de l'utilisateur connecté
-    this.authService.currentUser$.subscribe((user) => {
-      if (user) {
-        this.currentUserId = user._id;
-      }
-    });
-  }
-
-  // Chargement des collections
-  loadCollections(): void {
-    if (!this.currentUserId) return;
-
-    this.loading = true;
-    this.errorMessage = '';
-
-    this.collectionService.getCollectionsByUser(this.currentUserId).subscribe({
-      next: (collections) => {
-        this.collections = collections || [];
-        this.loading = false;
-      },
-      error: (error) => {
-        this.errorMessage = error.message;
-        this.loading = false;
-        console.error('Erreur lors du chargement des collections:', error);
-      },
-    });
-  }
-
-  // Gestion des modals
-  openCreateModal(): void {
-    this.editingCollection = null;
-    this.collectionForm.reset();
-    this.showModal = true;
-    this.activeMenuId = '';
-  }
-
-  editCollection(collection: Collection): void {
-    this.editingCollection = collection;
-    this.collectionForm.patchValue({
-      name: collection.name,
-      description: collection.description || '',
-    });
-    this.editingCollection._id = collection._id;
-    this.showModal = true;
-    this.activeMenuId = '';
-  }
-
-  closeModal(): void {
-    this.showModal = false;
-    this.editingCollection = null;
-    this.collectionForm.reset();
-  }
-
-  viewCollection(collection: Collection): void {
-    this.selectedCollection = collection;
-    this.showDetailsModal = true;
-    this.activeMenuId = '';
-  }
-
-  closeDetailsModal(): void {
-    this.showDetailsModal = false;
-    this.selectedCollection = null;
-  }
-
-  // Gestion du menu d'actions
-  toggleActionsMenu(collectionId: string): void {
-    this.activeMenuId = this.activeMenuId === collectionId ? '' : collectionId;
-  }
-
-  // Soumission du formulaire
+  /**
+   * submitForm
+   * -----------
+   * Soumet le formulaire de collection :
+   * - Si `editingCollection` est défini -> met à jour une collection existante
+   * - Sinon -> crée une nouvelle collection
+   *
+   * Étapes :
+   * 1. Vérifie si le formulaire est valide
+   *    - Si invalide -> on sort de la methode
+   * 2. Active l’indicateur `submitting`
+   * 3. Prépare les données à envoyer (`updateData` ou `createData`)
+   * 4. Appelle le service (`updateCollection` ou `createCollection`)
+   * 5. Gestion de la réponse :
+   *    - Succès :
+   *        - Met à jour ou ajoute la collection dans `collections`
+   *        - Ferme le modal
+   *        - Désactive `submitting`
+   *    - Erreur :
+   *        - Stocke le message d’erreur
+   *        - Désactive `submitting`
+   */
   submitForm(): void {
     if (this.collectionForm.invalid) return;
 
-    this.submitting = true;
+    this.submitting.set(true);
     const formData = this.collectionForm.value;
 
-    if (this.editingCollection) {
+    if (this.editingCollection()) {
       // Modification
       const updateData: UpdateCollectionRequest = {
         name: formData.name,
         description: formData.description || undefined,
       };
 
-      this.collectionService.updateCollection(this.editingCollection._id, updateData).subscribe({
+      this.collectionService.updateCollection(this.editingCollection()!._id, updateData).subscribe({
         next: (updatedCollection) => {
-          const index = this.collections.findIndex((c) => c._id === this.editingCollection!._id);
+          const index = this.collections().findIndex(
+            (c) => c._id === this.editingCollection()!._id,
+          );
           if (index > -1) {
-            this.collections[index] = updatedCollection;
+            this.collections()[index] = updatedCollection;
           }
           this.closeModal();
-          this.submitting = false;
+          this.submitting.set(false);
         },
         error: (error) => {
-          this.errorMessage = error.message;
-          this.submitting = false;
+          this.errorMessage.set(error.message);
+          this.submitting.set(false);
         },
       });
     } else {
       // Création
       const createData: CreateCollectionRequest = {
         name: formData.name,
-        description: formData.description || undefined,
-        userId: this.currentUserId,
+        description: formData.description || '',
+        userId: this.currentUserId(),
       };
 
       this.collectionService.createCollection(createData).subscribe({
         next: (newCollection) => {
-          this.collections.unshift(newCollection);
+          this.collections().unshift(newCollection);
           this.closeModal();
-          this.submitting = false;
+          this.submitting.set(false);
         },
         error: (error) => {
-          this.errorMessage = error.message;
-          this.submitting = false;
+          this.errorMessage.set(error.message);
+          this.submitting.set(false);
         },
       });
     }
   }
+  //#endregion
 
-  // Gestion de la suppression
-  confirmDelete(collection: Collection): void {
-    this.collectionToDelete = collection;
-    this.showDeleteModal = true;
-    this.activeMenuId = '';
+  //#region Current User
+  /**
+   * getCurrentUser
+   * --------------
+   * Récupère l'identifiant de l'utilisateur actuellement connecté
+   * via l'Observable `currentUser$` du service d'authentification.
+   *
+   * Étapes :
+   * 1. Abonement à `authService.currentUser$` pour récupérer les informations de l'utilisateur
+   * 2. Si un utilisateur est présent :
+   *    - Met à jour le Signal `currentUserId` avec son identifiant (`_id`)
+   */
+  private getCurrentUser(): void {
+    // Récupérer l'ID de l'utilisateur connecté
+    this.authService.currentUser$.subscribe((user) => {
+      if (user) {
+        this.currentUserId.set(user._id);
+      }
+    });
   }
+  //#endregion
 
-  cancelDelete(): void {
-    this.showDeleteModal = false;
-    this.collectionToDelete = null;
-  }
+  //#region Collections
+  /**
+   * loadCollections
+   * ----------------
+   * Charge toutes les collections de l’utilisateur connecté.
+   *
+   * Étapes :
+   * 1. Vérifie si `currentUserId` est défini
+   *    - Si absent -> sortie immédiate (aucun appel inutile)
+   * 2. Active l’indicateur de chargement (`loading`)
+   * 3. Réinitialise le message d’erreur
+   * 4. Appelle `collectionService.getCollectionsByUser` pour récupérer les collections
+   * 5. Gestion de la réponse :
+   *    - Succès : met à jour `collections` et désactive le chargement
+   *    - Erreur : log l’erreur, met à jour `errorMessage` et désactive le chargement
+   */
+  loadCollections(): void {
+    if (!this.currentUserId) return;
 
-  executeDelete(): void {
-    if (!this.collectionToDelete) return;
+    this.loading.set(true);
+    this.errorMessage.set('');
 
-    this.deleting = true;
-
-    this.collectionService.deleteCollection(this.collectionToDelete._id).subscribe({
-      next: () => {
-        this.collections = this.collections.filter((c) => c._id !== this.collectionToDelete!._id);
-        this.cancelDelete();
-        this.deleting = false;
+    this.collectionService.getCollectionsByUser(this.currentUserId()).subscribe({
+      next: (collections) => {
+        this.collections.set(collections || null);
+        this.loading.set(false);
       },
       error: (error) => {
-        this.errorMessage = error.message;
-        this.deleting = false;
+        this.errorMessage.set(error.message);
+        this.loading.set(false);
+        console.error('Erreur lors du chargement des collections:', error);
       },
     });
   }
 
-  // Utilitaires
+  /**
+   * openCreateModal
+   * --------
+   * Ouvre le modal d'ajout d'une collection
+   */
+  openCreateModal(): void {
+    this.editingCollection.set(null);
+    this.collectionForm.reset();
+    this.showModalEditCreate.set(true);
+    this.activeMenuId.set('');
+  }
+
+  /**
+   * editCollection
+   * --------------
+   * Prépare l’édition d’une collection existante et ouvre la modale d’édition/création.
+   *
+   * Étapes :
+   * 1. Met à jour le signal `editingCollection` avec la collection sélectionnée
+   * 2. Pré-remplit le formulaire (`collectionForm`) avec les valeurs de la collection
+   *    - `name` : nom de la collection
+   *    - `description` : description (chaîne vide si absente)
+   * 3. Force la mise à jour de l’ID dans `editingCollection` (sécurité)
+   * 4. Affiche le modal d’édition/création (`showModalEditCreate`)
+   * 5. Réinitialise `activeMenuId` pour fermer tout menu contextuel ouvert
+   *
+   * Paramètres :
+   * - collection : Interface Collection -> la collection à modifier
+   */
+  editCollection(collection: Collection): void {
+    this.editingCollection.set(collection);
+    this.collectionForm.patchValue({
+      name: collection.name,
+      description: collection.description || '',
+    });
+    this.editingCollection()!._id = collection._id;
+    this.showModalEditCreate.set(true);
+    this.activeMenuId.set('');
+  }
+
+  /**
+   * closeDetailsModal
+   * --------
+   * Fermeture du modal d'ajout et de modification d'une collection
+   */
+  closeModal(): void {
+    this.showModalEditCreate.set(false);
+    this.editingCollection.set(null);
+    this.collectionForm.reset();
+  }
+
+  /**
+   * viewCollection
+   * --------
+   * Affichage du modal de details d'une collection
+   */
+  viewCollection(collection: Collection): void {
+    this.selectedCollection.set(collection);
+    this.showDetailsModal.set(true);
+    this.activeMenuId.set('');
+  }
+
+  /**
+   * closeDetailsModal
+   * --------
+   * Fermeture du modal de details d'une collection
+   */
+  closeDetailsModal(): void {
+    this.showDetailsModal.set(false);
+    this.selectedCollection.set(null);
+  }
+
+  /**
+   * toggleActionsMenu
+   * --------
+   * Affiche le menu dropdownd'une collection (détail, modification, suppression)
+   */
+  toggleActionsMenu(collectionId: string): void {
+    this.activeMenuId.set(this.activeMenuId() === collectionId ? '' : collectionId);
+  }
+
+  /**
+   * confirmDelete
+   * --------
+   * Confirmation de la suppression d'une collection
+   *
+   * Paramètre :
+   * - user : Interface `Collection`
+   */
+  confirmDelete(collection: Collection): void {
+    // Mise à jour du signal de la collection à supprimer
+    this.collectionToDelete.set(collection);
+
+    // Affichage du modal de suppression d'une collection
+    this.showDeleteModal.set(true);
+
+    // Reinitialisation du signal du menu dropdown
+    this.activeMenuId.set('');
+  }
+
+  /**
+   * cancelDelete
+   * --------
+   * Annulation de la suppression d'une collection
+   */
+  cancelDelete(): void {
+    // Masquage du modal de suppression d'une collection
+    this.showDeleteModal.set(false);
+
+    // Reinitialisation du signal de la collection à supprimer
+    this.collectionToDelete.set(null);
+  }
+
+  /**
+   * executeDelete
+   * -------------
+   * Supprime une collection sélectionnée via le service `collectionService`.
+   *
+   * Étapes :
+   * 1. Vérifie qu'une collection est sélectionnée
+   *    - Si aucune collection n'est sélectionnée, la méthode s'arrête
+   * 2. Active le flag `deleting` pour indiquer que l'opération est en cours
+   * 3. Appelle la méthode `deleteCollection` du service Angular avec l'identifiant de la collection
+   * 4. En cas de succès :
+   *    - Met à jour la liste des collections (`collections`) en retirant la collection supprimée
+   *    - Appelle `cancelDelete()` pour réinitialiser la sélection et fermer la modale
+   *    - Réinitialise le flag `deleting`
+   * 5. En cas d'erreur :
+   *    - Met à jour `errorMessage` pour informer l'utilisateur
+   *    - Réinitialise le flag `deleting`
+   */
+  executeDelete(): void {
+    if (!this.collectionToDelete) return; // Vérifie qu'une collection est sélectionnée
+
+    this.deleting.set(true); // Indique que la suppression est en cours
+
+    this.collectionService.deleteCollection(this.collectionToDelete()!._id).subscribe({
+      next: () => {
+        // Retire la collection supprimée de la liste
+        this.collections.set(
+          this.collections().filter((c) => c._id !== this.collectionToDelete()!._id),
+        );
+
+        this.cancelDelete(); // Réinitialise la sélection et ferme la modale
+        this.deleting.set(false); // Réinitialise le signal
+      },
+      error: (error) => {
+        this.errorMessage = error.message; // Message d'erreur utilisateur
+        this.deleting.set(false); // Réinitialise le signal
+      },
+    });
+  }
+
+  /**
+   * formatDate
+   * --------
+   * Permet de formater la date renseigner en paramètre
+   *
+   * Paramètre :
+   * - dateString : string
+   */
   formatDate(dateString: string): string {
     if (!dateString) return 'Date inconnue';
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -712,18 +383,39 @@ export class CollectionsComponent implements OnInit {
     });
   }
 
+  /**
+   * getTotalVolumes
+   * ---------------
+   * Calcule le nombre total de tomes possédés dans une collection de mangas.
+   *
+   * Paramètres :
+   * - collection : Interface `Collection`
+   *
+   * Retour :
+   * - number -> nombre total de tomes possédés
+   */
   getTotalVolumes(collection: Collection): number {
-    if (!collection.mangas) return 0;
+    if (!collection.mangas) return 0; // Pas de mangas -> 0 tomes
     return collection.mangas.reduce((total, manga) => {
-      return total + (manga.tomesPossedes?.length || 0);
+      return total + (manga.tomesPossedes?.length || 0); // Additionne les tomes de chaque manga
     }, 0);
   }
+  //#endregion
 
-  // Fermer les menus quand on clique ailleurs
+  //#region Document click
+  /**
+   * onDocumentClick
+   * ---------------
+   * Ferme les menus ouverts lorsque l'utilisateur clique en dehors d'eux.
+   *
+   * Paramètres :
+   * - event : Event -> événement de clic du document
+   */
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
     if (!target.closest('.relative')) {
-      this.activeMenuId = '';
+      this.activeMenuId.set('');
     }
   }
+  //#endregion
 }

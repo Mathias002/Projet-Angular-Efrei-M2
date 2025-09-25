@@ -12,12 +12,13 @@ import {
   LoginRequest,
   User,
 } from '../models/auth.model';
+import { API_Backend } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly API_URL = 'http://localhost:3000/auth';
+  private readonly API_URL = `${API_Backend.apiUrl}/auth`;
   private readonly TOKEN_KEY = 'access_token';
   private readonly USER_KEY = 'current_user';
 
