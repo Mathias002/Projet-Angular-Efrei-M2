@@ -10,16 +10,28 @@ import {
   UpdateCollectionRequest,
   UpdateMangaCollection,
 } from '../models/collection.model';
+import { API_Backend } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CollectionService {
-  private readonly API_URL = 'http://localhost:3000/collections';
+  private readonly API_URL = `${API_Backend.apiUrl}/collections`;
 
   constructor(private http: HttpClient) {}
 
-  // Créer une collection
+  /**
+   * createCollection
+   * ----------
+   * Créer une collection
+   *
+   * Paramètres :
+   * - collectionData : Interface  `CreateCollectionRequest` -> données de la collection à créer
+   *
+   * Retour :
+   * - Observable émettant l’objet `Collection` de la collection ajouté
+   * - En cas d’erreur HTTP, la méthode `handleError` est appelée
+   */
   createCollection(collectionData: CreateCollectionRequest): Observable<Collection> {
     return this.http
       .post<Collection>(`${this.API_URL}`, collectionData)

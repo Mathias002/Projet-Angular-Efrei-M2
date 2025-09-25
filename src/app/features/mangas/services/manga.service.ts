@@ -46,7 +46,7 @@ export class MangaService {
     }
 
     return this.http
-      .get<MangaListResponse>(`${this.API_URL}?`, { params })
+      .get<MangaListResponse>(`${this.API_URL}`, { params })
       .pipe(catchError(this.handleError));
   }
 

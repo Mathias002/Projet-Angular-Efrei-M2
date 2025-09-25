@@ -3,12 +3,13 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { UpdateRoleRequest, UserInfos } from '../models/admin.model';
+import { API_Backend } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminService {
-  private readonly API_URL = 'http://localhost:3000/users';
+  private readonly API_URL = `${API_Backend.apiUrl}/users`;
 
   constructor(private http: HttpClient) {}
 
