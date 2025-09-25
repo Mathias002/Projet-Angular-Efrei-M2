@@ -110,7 +110,7 @@ export class CollectionsComponent implements OnInit {
     this.submitting.set(true);
     const formData = this.collectionForm.value;
 
-    if (this.editingCollection) {
+    if (this.editingCollection()) {
       // Modification
       const updateData: UpdateCollectionRequest = {
         name: formData.name,
@@ -129,7 +129,7 @@ export class CollectionsComponent implements OnInit {
           this.submitting.set(false);
         },
         error: (error) => {
-          this.errorMessage = error.message;
+          this.errorMessage.set(error.message);
           this.submitting.set(false);
         },
       });
@@ -137,7 +137,7 @@ export class CollectionsComponent implements OnInit {
       // Création
       const createData: CreateCollectionRequest = {
         name: formData.name,
-        description: formData.description || undefined,
+        description: formData.description || '',
         userId: this.currentUserId(),
       };
 
@@ -148,7 +148,7 @@ export class CollectionsComponent implements OnInit {
           this.submitting.set(false);
         },
         error: (error) => {
-          this.errorMessage = error.message;
+          this.errorMessage.set(error.message);
           this.submitting.set(false);
         },
       });
