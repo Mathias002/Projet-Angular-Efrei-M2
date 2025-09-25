@@ -159,8 +159,8 @@ export class UsersService {
    * @returns Liste de tout les utilisateurs actif
    */
   async findAll(): Promise<User[]> {
-    // Récupère tout les utilisateurs actif
-    const users = await this.userModel.find({ deletedAt: null }).exec();
+    // get all active users
+    const users = await this.userModel.find().exec();
 
     // Vérifie le contenue de `users`
     if (users.length !== 0) {
