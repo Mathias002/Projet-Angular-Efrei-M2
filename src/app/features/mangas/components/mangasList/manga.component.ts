@@ -9,6 +9,10 @@ import { AddMangaToCollectionModalComponent } from '../addMangas/add-manga-to-co
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoadingDirective } from '../../../../shared/directives/appLoading/appLoading.directive';
 import { ErrorNetworkDirective } from '../../../../shared/directives/appErrorNetwork/appErrorNetwork.directive';
+import { StatusTextPipe } from '../../../../shared/pipes/mangaStatutTrad/mangaStatutTrad.pipe';
+import { FormatScorePipe } from '../../../../shared/pipes/mangaScoreFormat/mangaScoreFormat.pipe';
+import { ScoreColorPipe } from '../../../../shared/pipes/mangaTextScroreColor/mangaTextScoreColor.pipe';
+import { StatusColorPipe } from '../../../../shared/pipes/mangaStatutColor/mangaStatutColor.pipe';
 
 @Component({
   selector: 'app-manga-list',
@@ -21,6 +25,10 @@ import { ErrorNetworkDirective } from '../../../../shared/directives/appErrorNet
     AddMangaToCollectionModalComponent,
     LoadingDirective,
     ErrorNetworkDirective,
+    StatusTextPipe,
+    FormatScorePipe,
+    ScoreColorPipe,
+    StatusColorPipe,
   ],
   templateUrl: './manga.component.html',
 })
@@ -160,52 +168,6 @@ export class MangaListComponent implements OnInit {
     }
 
     return !navigator.onLine;
-  }
-
-  /**
-   * getStatusText
-   * --------
-   * Traduit le status récupérer de l'API en français
-   *
-   * Paramètre :
-   * - status : status récupérer depuis l'API
-   */
-  getStatusText(status: string): string {
-    const statusMap: Record<string, string> = {
-      Publishing: 'En cours',
-      Finished: 'Terminé',
-      'On Hiatus': 'En pause',
-      Discontinued: 'Arrêté',
-      Upcoming: 'à venir',
-    };
-    return statusMap[status] || status;
-  }
-
-  /**
-   * getScoreColor
-   * --------
-   * Change la couleur du badge de score en fonction de ce dernier
-   *
-   * Paramètre :
-   * - score : score récupérer depuis l'API
-   */
-  getScoreColor(score: number): string {
-    if (score >= 8.5) return 'text-green-400';
-    if (score >= 7.0) return 'text-yellow-400';
-    if (score >= 5.0) return 'text-orange-400';
-    return 'text-red-400';
-  }
-
-  /**
-   * formatScore
-   * --------
-   * Formate le score, si pas de score alors on renvoie `N/A`
-   *
-   * Paramètre :
-   * - score : score récupérer depuis l'API
-   */
-  formatScore(score: number): string {
-    return score ? score.toFixed(1) : 'N/A';
   }
 
   /**

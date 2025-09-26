@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { LoadingDirective } from './appLoading.directive';
 
 @Component({
-  template: ` <div *appLoading="isLoading" class="loading-content">Chargement...</div> `,
+  template: " <div *appLoading='isLoading' class='loading-content'>Chargement...</div> ",
   standalone: true,
   imports: [LoadingDirective],
 })
