@@ -261,7 +261,7 @@
     [pageSize]="25"
     [showFirstLastButtons]="true"
     [pageSizeOptions]="[5, 10, 15, 20, 25]"
-    [pageIndex]="currentPage"
+    [pageIndex]="currentPage()"
     (page)="handlePageEvent($event)"
   >
   </mat-paginator>
