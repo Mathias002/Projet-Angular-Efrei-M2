@@ -1,3 +1,125 @@
+<div *appLoading="pageLoading()">
+  <div class="container-wheel-and-hamster">
+    <div
+      aria-label="Orange and tan hamster running in a metal wheel"
+      role="img"
+      class="wheel-and-hamster"
+      [hidden]="!pageLoading()"
+      (load)="pageLoading.set(false)"
+    >
+      <div class="wheel"></div>
+      <div class="hamster">
+        <div class="hamster__body">
+          <div class="hamster__head">
+            <div class="hamster__ear"></div>
+            <div class="hamster__eye"></div>
+            <div class="hamster__nose"></div>
+          </div>
+          <div class="hamster__limb hamster__limb--fr"></div>
+          <div class="hamster__limb hamster__limb--fl"></div>
+          <div class="hamster__limb hamster__limb--br"></div>
+          <div class="hamster__limb hamster__limb--bl"></div>
+          <div class="hamster__tail"></div>
+        </div>
+      </div>
+      <div class="spoke"></div>
+    </div>
+  </div>
+</div>
+
+<div *appErrorNetwork="!isAPIJoignable()">
+  <div class="main_wrapper">
+    <div class="main">
+      <div class="antenna">
+        <div class="antenna_shadow"></div>
+        <div class="a1"></div>
+        <div class="a1d"></div>
+        <div class="a2"></div>
+        <div class="a2d"></div>
+        <div class="a_base"></div>
+      </div>
+      <div class="tv">
+        <div class="cruve">
+          <svg
+            class="curve_svg"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 189.929 189.929"
+            xml:space="preserve"
+          >
+            <path
+              d="M70.343,70.343c-30.554,30.553-44.806,72.7-39.102,115.635l-29.738,3.951C-5.442,137.659,11.917,86.34,49.129,49.13
+            C86.34,11.918,137.664-5.445,189.928,1.502l-3.95,29.738C143.041,25.54,100.895,39.789,70.343,70.343z"
+            ></path>
+          </svg>
+        </div>
+        <div class="display_div">
+          <div class="screen_out">
+            <div class="screen_out1">
+              <div class="screen">
+                <span class="notfound_text">Network Error :(</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="lines">
+          <div class="line1"></div>
+          <div class="line2"></div>
+          <div class="line3"></div>
+        </div>
+        <div class="buttons_div">
+          <div class="b1">
+            <div></div>
+          </div>
+          <div class="b2"></div>
+          <div class="speakers">
+            <div class="g1">
+              <div class="g11"></div>
+              <div class="g12"></div>
+              <div class="g13"></div>
+            </div>
+            <div class="g"></div>
+            <div class="g"></div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="base1"></div>
+        <div class="base2"></div>
+        <div class="base3"></div>
+      </div>
+    </div>
+    @if (errorMessage()) {
+      <div
+        class="relative w-fit-content flex flex-wrap items-center justify-center p-2 rounded-lg text-base font-medium [transition:all_0.5s_ease] border-solid border border-[#f85149] text-[#b22b2b] [&amp;_svg]:text-[#b22b2b] group bg-[linear-gradient(#f851491a,#f851491a)]"
+      >
+        <p class="flex flex-row items-center mr-auto gap-x-2">
+          <svg
+            stroke="currentColor"
+            fill="none"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            height="28"
+            width="28"
+            class="h-7 w-7"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"
+            ></path>
+            <path d="M12 9v4"></path>
+            <path d="M12 17h.01"></path>
+          </svg>
+          {{ errorMessage() }}
+        </p>
+      </div>
+    }
+  </div>
+</div>
+
 @if (!pageLoading() && isAPIJoignable()) {
   <section class="px-4 py-24 mx-auto max-w-7xl">
     <div class="w-full mx-auto text-left md:w-11/12 xl:w-9/12 md:text-center">
@@ -267,123 +389,4 @@
   </mat-paginator>
 
   <app-back-to-top></app-back-to-top>
-} @else if (pageLoading()) {
-  <div class="container-wheel-and-hamster">
-    <div
-      aria-label="Orange and tan hamster running in a metal wheel"
-      role="img"
-      class="wheel-and-hamster"
-      [hidden]="!pageLoading()"
-      (load)="pageLoading.set(false)"
-    >
-      <div class="wheel"></div>
-      <div class="hamster">
-        <div class="hamster__body">
-          <div class="hamster__head">
-            <div class="hamster__ear"></div>
-            <div class="hamster__eye"></div>
-            <div class="hamster__nose"></div>
-          </div>
-          <div class="hamster__limb hamster__limb--fr"></div>
-          <div class="hamster__limb hamster__limb--fl"></div>
-          <div class="hamster__limb hamster__limb--br"></div>
-          <div class="hamster__limb hamster__limb--bl"></div>
-          <div class="hamster__tail"></div>
-        </div>
-      </div>
-      <div class="spoke"></div>
-    </div>
-  </div>
-} @else if (!isAPIJoignable()) {
-  <!-- From Uiverse.io by Sophiek9h -->
-  <div class="main_wrapper">
-    <div class="main">
-      <div class="antenna">
-        <div class="antenna_shadow"></div>
-        <div class="a1"></div>
-        <div class="a1d"></div>
-        <div class="a2"></div>
-        <div class="a2d"></div>
-        <div class="a_base"></div>
-      </div>
-      <div class="tv">
-        <div class="cruve">
-          <svg
-            class="curve_svg"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-            viewBox="0 0 189.929 189.929"
-            xml:space="preserve"
-          >
-            <path
-              d="M70.343,70.343c-30.554,30.553-44.806,72.7-39.102,115.635l-29.738,3.951C-5.442,137.659,11.917,86.34,49.129,49.13
-            C86.34,11.918,137.664-5.445,189.928,1.502l-3.95,29.738C143.041,25.54,100.895,39.789,70.343,70.343z"
-            ></path>
-          </svg>
-        </div>
-        <div class="display_div">
-          <div class="screen_out">
-            <div class="screen_out1">
-              <div class="screen">
-                <span class="notfound_text">Network Error :(</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="lines">
-          <div class="line1"></div>
-          <div class="line2"></div>
-          <div class="line3"></div>
-        </div>
-        <div class="buttons_div">
-          <div class="b1">
-            <div></div>
-          </div>
-          <div class="b2"></div>
-          <div class="speakers">
-            <div class="g1">
-              <div class="g11"></div>
-              <div class="g12"></div>
-              <div class="g13"></div>
-            </div>
-            <div class="g"></div>
-            <div class="g"></div>
-          </div>
-        </div>
-      </div>
-      <div class="bottom">
-        <div class="base1"></div>
-        <div class="base2"></div>
-        <div class="base3"></div>
-      </div>
-    </div>
-    @if (errorMessage()) {
-      <div
-        class="relative w-fit-content flex flex-wrap items-center justify-center p-2 rounded-lg text-base font-medium [transition:all_0.5s_ease] border-solid border border-[#f85149] text-[#b22b2b] [&amp;_svg]:text-[#b22b2b] group bg-[linear-gradient(#f851491a,#f851491a)]"
-      >
-        <p class="flex flex-row items-center mr-auto gap-x-2">
-          <svg
-            stroke="currentColor"
-            fill="none"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            height="28"
-            width="28"
-            class="h-7 w-7"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"
-            ></path>
-            <path d="M12 9v4"></path>
-            <path d="M12 17h.01"></path>
-          </svg>
-          {{ errorMessage() }}
-        </p>
-      </div>
-    }
-  </div>
 }

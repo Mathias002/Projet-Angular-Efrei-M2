@@ -7,6 +7,8 @@ import { BackToTopComponent } from '../../../../shared/components/back-to-top/ba
 import { MangaDetailsModalComponent } from '../mangasDetails/manga-details-modal.component';
 import { AddMangaToCollectionModalComponent } from '../addMangas/add-manga-to-collection-modal.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { LoadingDirective } from '../../../../shared/directives/appLoading/appLoading.directive';
+import { ErrorNetworkDirective } from '../../../../shared/directives/appErrorNetwork/appErrorNetwork.directive';
 
 @Component({
   selector: 'app-manga-list',
@@ -17,6 +19,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     BackToTopComponent,
     MangaDetailsModalComponent,
     AddMangaToCollectionModalComponent,
+    LoadingDirective,
+    ErrorNetworkDirective,
   ],
   templateUrl: './manga.component.html',
 })
